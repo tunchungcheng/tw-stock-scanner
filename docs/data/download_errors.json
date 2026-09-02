@@ -1,0 +1,27 @@
+[
+  {
+    "date": "2026-04-06",
+    "market": "TPEx",
+    "error": "TPEx 找不到行情欄位；官方格式可能已變更：{\"date\": \"20260406\", \"tables\": [{\"title\": \"上櫃股票行情\", \"subtitle\": \"上櫃家數: 0家&nbsp;&nbsp;&nbsp;總成交金額: 0元&nbsp;&nbsp;&nbsp;總成交股數: 0股&nbsp;&nbsp;&nbsp;總成交筆數: 0筆\", \"date\": \"115/04/06\", \"listedCompanies\": \"0\", \"totalTradingAmount\": \"0\", \"totalTradingShares\": \"0\", \"totalTranscations\": \"0\", \"totalCount\": 0, \""
+  },
+  {
+    "date": "2026-05-01",
+    "market": "TPEx",
+    "error": "TPEx 找不到行情欄位；官方格式可能已變更：{\"date\": \"20260501\", \"tables\": [{\"title\": \"上櫃股票行情\", \"subtitle\": \"上櫃家數: 0家&nbsp;&nbsp;&nbsp;總成交金額: 0元&nbsp;&nbsp;&nbsp;總成交股數: 0股&nbsp;&nbsp;&nbsp;總成交筆數: 0筆\", \"date\": \"115/05/01\", \"listedCompanies\": \"0\", \"totalTradingAmount\": \"0\", \"totalTradingShares\": \"0\", \"totalTranscations\": \"0\", \"totalCount\": 0, \""
+  },
+  {
+    "date": "2026-06-19",
+    "market": "TPEx",
+    "error": "TPEx 找不到行情欄位；官方格式可能已變更：{\"date\": \"20260619\", \"tables\": [{\"title\": \"上櫃股票行情\", \"subtitle\": \"上櫃家數: 0家&nbsp;&nbsp;&nbsp;總成交金額: 0元&nbsp;&nbsp;&nbsp;總成交股數: 0股&nbsp;&nbsp;&nbsp;總成交筆數: 0筆\", \"date\": \"115/06/19\", \"listedCompanies\": \"0\", \"totalTradingAmount\": \"0\", \"totalTradingShares\": \"0\", \"totalTranscations\": \"0\", \"totalCount\": 0, \""
+  },
+  {
+    "date": "2026-07-10",
+    "market": "TPEx",
+    "error": "TPEx 找不到行情欄位；官方格式可能已變更：{\"date\": \"20260710\", \"tables\": [{\"title\": \"上櫃股票行情\", \"subtitle\": \"上櫃家數: 0家&nbsp;&nbsp;&nbsp;總成交金額: 0元&nbsp;&nbsp;&nbsp;總成交股數: 0股&nbsp;&nbsp;&nbsp;總成交筆數: 0筆\", \"date\": \"115/07/10\", \"listedCompanies\": \"0\", \"totalTradingAmount\": \"0\", \"totalTradingShares\": \"0\", \"totalTranscations\": \"0\", \"totalCount\": 0, \""
+  },
+  {
+    "date": "2026-09-03",
+    "market": "TPEx",
+    "error": "TPEx 找不到行情欄位；官方格式可能已變更：{\"date\": \"20260903\", \"tables\": [{\"title\": \"上櫃股票行情\", \"subtitle\": \"上櫃家數: 0家&nbsp;&nbsp;&nbsp;總成交金額: 0元&nbsp;&nbsp;&nbsp;總成交股數: 0股&nbsp;&nbsp;&nbsp;總成交筆數: 0筆\", \"date\": \"115/09/03\", \"listedCompanies\": \"0\", \"totalTradingAmount\": \"0\", \"totalTradingShares\": \"0\", \"totalTranscations\": \"0\", \"totalCount\": 0, \""
+  }
+]

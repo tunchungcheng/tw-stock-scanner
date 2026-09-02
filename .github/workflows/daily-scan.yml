@@ -1,0 +1,71 @@
+name: 台股每日掃描與網頁發布
+
+on:
+  schedule:
+    # UTC 10:30 = 台灣時間 18:30
+    - cron: "30 10 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: tw-stock-scanner-pages
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 取得程式碼
+        uses: actions/checkout@v5
+
+      - name: 設定 Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: 安裝套件
+        run: python -m pip install -r requirements.txt
+
+      - name: 執行台股掃描
+        run: python scanner.py
+
+      - name: 保存每日結果
+        run: |
+          if [[ -n "$(git status --porcelain docs/data)" ]]; then
+            git config user.name "github-actions[bot]"
+            git config user.email \
+              "41898282+github-actions[bot]@users.noreply.github.com"
+
+            git add docs/data
+            git commit -m "data: update daily scan"
+            git push
+          else
+            echo "沒有新的結果需要提交"
+          fi
+
+      - name: 設定 Pages
+        uses: actions/configure-pages@v5
+
+      - name: 上傳網站
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: docs
+
+  deploy:
+    needs: scan
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: 發布 GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

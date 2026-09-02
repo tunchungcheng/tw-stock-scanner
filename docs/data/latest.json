@@ -1,0 +1,9 @@
+{
+  "status": "pending",
+  "meta": {
+    "message": "尚未產生掃描結果，請先執行 GitHub Actions workflow。"
+  },
+  "setup": [],
+  "trigger": []
+}
+

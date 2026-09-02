@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="台股蓄勢與發動股票每日掃描結果">
+  <title>台股動能雷達</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">TWSE · TPEx</p>
+        <h1>台股動能雷達</h1>
+      </div>
+      <div class="date-control">
+        <label for="date-select">交易日</label>
+        <select id="date-select" aria-label="選擇歷史交易日">
+          <option value="latest">最新結果</option>
+        </select>
+      </div>
+    </header>
+
+    <section class="summary" aria-label="市場摘要">
+      <article class="summary-card primary">
+        <span>資料交易日</span>
+        <strong id="trade-date">—</strong>
+        <small id="generated-at">等待資料</small>
+      </article>
+      <article class="summary-card">
+        <span>大盤狀態</span>
+        <strong id="market-state">—</strong>
+        <small id="market-return">TAIEX 5 日報酬 —</small>
+      </article>
+      <article class="summary-card">
+        <span>蓄勢名單</span>
+        <strong id="setup-count">0</strong>
+        <small>尚未突破</small>
+      </article>
+      <article class="summary-card">
+        <span>發動名單</span>
+        <strong id="trigger-count">0</strong>
+        <small>溫和放量突破</small>
+      </article>
+    </section>
+
+    <section class="workspace">
+      <div class="toolbar">
+        <div class="tabs" role="tablist" aria-label="掃描名單">
+          <button class="tab active" id="setup-tab" role="tab" aria-selected="true" data-list="setup">蓄勢名單</button>
+          <button class="tab" id="trigger-tab" role="tab" aria-selected="false" data-list="trigger">發動名單</button>
+        </div>
+        <div class="tools">
+          <label class="search">
+            <span class="sr-only">搜尋代號或名稱</span>
+            <input id="search-input" type="search" placeholder="搜尋代號或名稱">
+          </label>
+          <a class="download" id="csv-link" href="data/setup_latest.csv" download>下載 CSV</a>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th data-sort="rank">排名</th>
+              <th data-sort="stock_id">股票</th>
+              <th data-sort="score">分數</th>
+              <th data-sort="close">收盤</th>
+              <th data-sort="pct_change">當日</th>
+              <th data-sort="return_5d">5 日</th>
+              <th data-sort="return_20d">20 日</th>
+              <th data-sort="volume_ratio">量比</th>
+              <th data-sort="k">K / D</th>
+              <th data-sort="distance_to_high20_pct">距高點</th>
+              <th>入選原因</th>
+            </tr>
+          </thead>
+          <tbody id="result-body"></tbody>
+        </table>
+        <div class="empty" id="empty-state" hidden>
+          <strong>目前沒有符合條件的股票</strong>
+          <span>嚴格條件下出現空名單是正常結果。</span>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <span id="data-note">收盤後訊號，僅供研究。</span>
+      <span>價格未還原 · 下個交易日才可執行</span>
+    </footer>
+  </main>
+  <script src="app.js" defer></script>
+</body>
+</html>
+

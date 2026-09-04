@@ -1,8 +1,11 @@
 name: 台股每日掃描與網頁發布
 
 on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "docs/data/**"
   schedule:
-    # UTC 10:30 = 台灣時間 18:30
     - cron: "30 10 * * 1-5"
   workflow_dispatch:
 
@@ -18,7 +21,6 @@ concurrency:
 jobs:
   scan:
     runs-on: ubuntu-latest
-
     steps:
       - name: 取得程式碼
         uses: actions/checkout@v5
@@ -39,9 +41,7 @@ jobs:
         run: |
           if [[ -n "$(git status --porcelain docs/data)" ]]; then
             git config user.name "github-actions[bot]"
-            git config user.email \
-              "41898282+github-actions[bot]@users.noreply.github.com"
-
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add docs/data
             git commit -m "data: update daily scan"
             git push
@@ -60,11 +60,9 @@ jobs:
   deploy:
     needs: scan
     runs-on: ubuntu-latest
-
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
       - name: 發布 GitHub Pages
         id: deployment

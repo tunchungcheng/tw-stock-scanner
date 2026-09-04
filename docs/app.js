@@ -4,12 +4,32 @@ const state = {
   query: "",
   sortKey: "rank",
   sortDirection: 1,
+  reasonPriority: "",
+};
+
+const reasonOptions = {
+  setup: [
+    "KD 低檔交叉",
+    "20 日漲幅未過熱",
+    "接近 20 日高點",
+    "量縮整理",
+    "波動收斂",
+    "貼近 MA20",
+    "5 日相對強勢",
+  ],
+  trigger: [
+    "突破 20 日高點",
+    "溫和放量",
+    "漲幅未過熱",
+    "5 日相對強勢",
+  ],
 };
 
 const els = {
   body: document.querySelector("#result-body"),
   empty: document.querySelector("#empty-state"),
   dateSelect: document.querySelector("#date-select"),
+  reasonSort: document.querySelector("#reason-sort"),
   search: document.querySelector("#search-input"),
   csv: document.querySelector("#csv-link"),
 };
@@ -54,11 +74,33 @@ function visibleRows() {
     ? rows.filter((row) => `${row.stock_id} ${row.stock_name}`.toLowerCase().includes(query))
     : rows;
   return filtered.sort((a, b) => {
+    if (state.reasonPriority) {
+      const aMatches = (a.reasons || []).includes(state.reasonPriority);
+      const bMatches = (b.reasons || []).includes(state.reasonPriority);
+      if (aMatches !== bMatches) return bMatches - aMatches;
+      if ((a.score ?? 0) !== (b.score ?? 0)) return (b.score ?? 0) - (a.score ?? 0);
+    }
     const aValue = a[state.sortKey];
     const bValue = b[state.sortKey];
+    if (state.sortKey === "reasons") {
+      return ((a.reasons || []).length - (b.reasons || []).length) * state.sortDirection;
+    }
     if (typeof aValue === "string") return aValue.localeCompare(bValue) * state.sortDirection;
     return ((aValue ?? -Infinity) - (bValue ?? -Infinity)) * state.sortDirection;
   });
+}
+
+function updateReasonOptions() {
+  const current = state.reasonPriority;
+  els.reasonSort.innerHTML = '<option value="">依入選原因排序</option>';
+  reasonOptions[state.activeList].forEach((reason) => {
+    const option = document.createElement("option");
+    option.value = reason;
+    option.textContent = reason;
+    els.reasonSort.append(option);
+  });
+  els.reasonSort.value = reasonOptions[state.activeList].includes(current) ? current : "";
+  state.reasonPriority = els.reasonSort.value;
 }
 
 function render() {
@@ -122,9 +164,18 @@ document.querySelectorAll(".tab").forEach((button) => {
     state.activeList = button.dataset.list;
     state.sortKey = "rank";
     state.sortDirection = 1;
+    state.reasonPriority = "";
+    updateReasonOptions();
     els.csv.href = `data/${state.activeList}_latest.csv`;
     render();
   });
+});
+
+els.reasonSort.addEventListener("change", (event) => {
+  state.reasonPriority = event.target.value;
+  state.sortKey = "rank";
+  state.sortDirection = 1;
+  render();
 });
 
 els.search.addEventListener("input", (event) => {
@@ -140,11 +191,14 @@ els.dateSelect.addEventListener("change", (event) => {
 document.querySelectorAll("th[data-sort]").forEach((header) => {
   header.addEventListener("click", () => {
     const key = header.dataset.sort;
-    state.sortDirection = state.sortKey === key ? state.sortDirection * -1 : 1;
+    state.sortDirection = state.sortKey === key
+      ? state.sortDirection * -1
+      : key === "reasons" ? -1 : 1;
     state.sortKey = key;
     render();
   });
 });
 
+updateReasonOptions();
 loadDates();
 loadData();

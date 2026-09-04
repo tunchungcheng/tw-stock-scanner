@@ -67,7 +67,7 @@ select:focus, input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgb
 
 .summary {
   display: grid;
-  grid-template-columns: 1.35fr repeat(3, 1fr);
+  grid-template-columns: 1.35fr 1fr 1fr;
   gap: 12px;
   margin: 28px 0 16px;
 }
@@ -85,6 +85,48 @@ select:focus, input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgb
 .summary-card strong { display: block; margin: 8px 0 3px; font-size: 1.65rem; }
 .summary-card.primary strong { color: var(--cyan); }
 
+.strategy-panel {
+  margin: 0 0 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(13, 26, 43, .78);
+}
+
+.strategy-panel summary {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 15px 18px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.strategy-panel summary::-webkit-details-marker { display: none; }
+.strategy-panel summary::after { content: "+"; color: var(--cyan); font-size: 1.25rem; }
+.strategy-panel[open] summary::after { content: "−"; }
+.strategy-panel summary span { font-weight: 750; }
+.strategy-panel summary small { margin-left: auto; color: var(--muted); }
+
+.strategy-grid {
+  display: grid;
+  grid-template-columns: .8fr 1.5fr .8fr;
+  gap: 18px;
+  padding: 2px 18px 20px;
+  border-top: 1px solid rgba(32, 54, 82, .72);
+}
+
+.strategy-grid section { padding-top: 15px; }
+.strategy-grid .scoring-rules { min-width: 0; }
+.strategy-grid h2 { margin: 0 0 10px; font-size: .95rem; }
+.strategy-grid p { margin: 10px 0 0; color: var(--muted); font-size: .8rem; }
+.rules { display: grid; grid-template-columns: 1fr 1fr; gap: 7px 10px; margin: 0; padding: 0; list-style: none; }
+.rules li { display: flex; gap: 7px; color: #b8cbe0; font-size: .82rem; }
+.rules strong { color: var(--lime); }
+.rules.compact { grid-template-columns: 1fr; }
+.rules.danger li::before { content: "×"; color: var(--red); font-weight: 800; }
+
 .workspace {
   overflow: hidden;
   border: 1px solid var(--line);
@@ -94,9 +136,9 @@ select:focus, input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgb
 }
 
 .toolbar { padding: 14px 16px; border-bottom: 1px solid var(--line); }
-.tabs { display: flex; gap: 5px; padding: 4px; border-radius: 10px; background: #081422; }
-.tab { padding: 8px 14px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); cursor: pointer; }
-.tab.active { background: var(--panel-2); color: var(--text); box-shadow: inset 0 -2px var(--cyan); }
+.list-heading { display: grid; gap: 2px; }
+.list-heading strong { font-size: 1rem; }
+.list-heading span { color: var(--muted); font-size: .78rem; }
 
 .download {
   padding: 9px 13px;
@@ -106,6 +148,7 @@ select:focus, input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgb
   text-decoration: none;
 }
 .download:hover { border-color: var(--cyan); }
+.reason-sort select { min-width: 170px; }
 
 .table-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; white-space: nowrap; }
@@ -135,6 +178,8 @@ footer { padding: 16px 3px 0; color: var(--muted); font-size: .78rem; }
   .tools { width: 100%; }
   input { width: 100%; }
   .search { flex: 1; }
+  .strategy-grid { grid-template-columns: 1fr 1fr; }
+  .strategy-grid .scoring-rules { grid-column: 1 / -1; grid-row: 1; }
 }
 
 @media (max-width: 560px) {
@@ -144,8 +189,14 @@ footer { padding: 16px 3px 0; color: var(--muted); font-size: .78rem; }
   .summary-card { min-height: 105px; padding: 14px; }
   .summary-card strong { font-size: 1.28rem; }
   .date-control label { display: none; }
+  .strategy-panel summary { align-items: flex-start; flex-direction: column; gap: 2px; }
+  .strategy-panel summary small { margin-left: 0; }
+  .strategy-panel summary::after { position: absolute; right: 28px; }
+  .strategy-grid { grid-template-columns: 1fr; }
+  .strategy-grid .scoring-rules { grid-column: auto; grid-row: auto; }
+  .rules { grid-template-columns: 1fr; }
   .tools { align-items: stretch; flex-direction: column; }
+  .reason-sort select { width: 100%; }
   .download { text-align: center; }
   footer { align-items: flex-start; flex-direction: column; }
 }
-

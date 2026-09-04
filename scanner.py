@@ -24,9 +24,8 @@ TPEX_URL = "https://www.tpex.org.tw/www/zh-tw/afterTrading/dailyQuotes"
 BACKFILL_CALENDAR_DAYS = 150
 REQUEST_INTERVAL_SECONDS = 0.25
 MIN_AVG_TURNOVER_20 = 30_000_000
-SETUP_MIN_SCORE = 5
+SETUP_MIN_SCORE = 6
 SETUP_LIMIT = 20
-TRIGGER_LIMIT = 20
 
 ALIASES = {
     "stock_id": {"證券代號", "代號", "股票代號", "SecuritiesCompanyCode", "Code"},
@@ -276,6 +275,7 @@ def calculate_indicators(price_df: pd.DataFrame) -> pd.DataFrame:
 
     grouped = df.groupby(keys, group_keys=False)
     df["K_prev"] = grouped["K"].shift(1)
+    df["K_prev2"] = grouped["K"].shift(2)
     df["D_prev"] = grouped["D"].shift(1)
     previous_close = grouped["close"].shift(1)
     df["TR"] = pd.concat(
@@ -289,6 +289,7 @@ def calculate_indicators(price_df: pd.DataFrame) -> pd.DataFrame:
 
     grouped = df.groupby(keys, group_keys=False)
     df["ATR14"] = grouped["TR"].transform(lambda s: s.rolling(14, min_periods=14).mean())
+    df["MA5"] = grouped["close"].transform(lambda s: s.rolling(5, min_periods=5).mean())
     df["MA20"] = grouped["close"].transform(lambda s: s.rolling(20, min_periods=20).mean())
     df["STD20"] = grouped["close"].transform(lambda s: s.rolling(20, min_periods=20).std())
     df["BB_WIDTH"] = 4 * df["STD20"] / df["MA20"].replace(0, np.nan)
@@ -309,6 +310,9 @@ def calculate_indicators(price_df: pd.DataFrame) -> pd.DataFrame:
     df["HIGH20_PREV"] = grouped["high"].transform(
         lambda s: s.shift(1).rolling(20, min_periods=20).max()
     )
+    df["HIGH10_PREV"] = grouped["high"].transform(
+        lambda s: s.shift(1).rolling(10, min_periods=10).max()
+    )
     df["pct_change"] = grouped["close"].pct_change(fill_method=None) * 100
     df["return_5d"] = grouped["close"].pct_change(5, fill_method=None) * 100
     df["return_20d"] = grouped["close"].pct_change(20, fill_method=None) * 100
@@ -322,6 +326,11 @@ def calculate_indicators(price_df: pd.DataFrame) -> pd.DataFrame:
     df["breakout_20d"] = df["close"] >= df["HIGH20_PREV"]
     df["volatility_compression"] = (df["ATR_PCT"] <= df["ATR_Q30_60"]) | (
         df["BB_WIDTH"] <= df["BBW_Q30_60"]
+    )
+    grouped = df.groupby(keys, group_keys=False)
+    previous_compression = grouped["volatility_compression"].shift(1)
+    df["volatility_release"] = previous_compression.eq(True) & (
+        df["BB_WIDTH"] > df["BBW_Q30_60"]
     )
     df["liquid"] = df["TURNOVER20"] >= MIN_AVG_TURNOVER_20
     return df
@@ -367,30 +376,37 @@ def add_market_context(
     return latest, context
 
 
-def score_lists(latest: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+def score_setup(latest: pd.DataFrame) -> pd.DataFrame:
     latest = latest.copy()
-    latest["low_kd_cross"] = latest["golden_cross"] & latest["K"].between(20, 50)
-    latest["return_20d_in_range"] = latest["return_20d"].between(-5, 8)
-    latest["near_breakout_zone"] = latest["distance_to_high20_pct"].between(2, 8)
-    latest["volume_dry"] = latest["volume_dry_ratio"] <= 0.80
-    latest["ma20_near"] = (latest["close"] >= latest["MA20"]) & (
-        latest["close"] <= latest["MA20"] * 1.05
+    latest["trend_turn"] = (latest["close"] > latest["MA5"]) & (latest["MA5"] > latest["MA20"])
+    latest["kd_acceleration"] = (
+        (latest["K"] > latest["K_prev"])
+        & (latest["K_prev"] > latest["K_prev2"])
+        & (latest["K"] > latest["D"])
     )
+    latest["return_5d_momentum"] = latest["return_5d"].between(1, 8)
     latest["relative_strength_5d"] = latest["relative_return_5d"] > 0
+    latest["volume_momentum"] = latest["volume_ratio"].between(1.0, 2.5)
+    latest["early_breakout"] = (
+        (latest["close"] >= latest["HIGH10_PREV"])
+        & (latest["close"] < latest["HIGH20_PREV"])
+    )
+    latest["near_breakout_zone"] = latest["distance_to_high20_pct"].between(0, 5)
     latest["excluded_as_extended"] = (
-        (latest["return_5d"] > 8)
-        | (latest["return_20d"] > 15)
-        | (latest["close"] > latest["MA20"] * 1.08)
-        | (latest["volume_ratio"] > 3)
+        (latest["return_5d"] > 10)
+        | (latest["return_20d"] > 20)
+        | (latest["close"] > latest["MA20"] * 1.12)
+        | (latest["volume_ratio"] > 4)
     )
     latest["setup_score"] = (
-        latest["low_kd_cross"].astype(int) * 2
-        + latest["return_20d_in_range"].astype(int)
-        + latest["near_breakout_zone"].astype(int) * 2
-        + latest["volume_dry"].astype(int) * 2
-        + latest["volatility_compression"].astype(int) * 2
-        + latest["ma20_near"].astype(int)
+        latest["trend_turn"].astype(int) * 2
+        + latest["kd_acceleration"].astype(int) * 2
+        + latest["return_5d_momentum"].astype(int) * 2
         + latest["relative_strength_5d"].astype(int) * 2
+        + latest["volume_momentum"].astype(int) * 2
+        + latest["early_breakout"].astype(int) * 2
+        + latest["volatility_release"].astype(int)
+        + latest["near_breakout_zone"].astype(int)
     )
 
     valid = (
@@ -406,54 +422,24 @@ def score_lists(latest: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
         & (latest["setup_score"] >= SETUP_MIN_SCORE)
     )
 
-    latest["moderate_breakout_volume"] = latest["volume_ratio"].between(1.2, 2.5)
-    latest["controlled_daily_move"] = latest["pct_change"].between(0, 4)
-    trigger_mask = (
-        valid
-        & latest["breakout_20d"]
-        & latest["moderate_breakout_volume"]
-        & latest["controlled_daily_move"]
-        & (latest["return_20d"] <= 15)
-        & (latest["close"] <= latest["MA20"] * 1.10)
-    )
-    latest["trigger_score"] = (
-        latest["breakout_20d"].astype(int) * 2
-        + latest["moderate_breakout_volume"].astype(int) * 2
-        + latest["controlled_daily_move"].astype(int)
-        + latest["relative_strength_5d"].astype(int) * 2
-        + latest["market_above_ma60"].astype(int)
-        + (latest["return_20d"] <= 15).astype(int)
-    )
-
     setup = latest.loc[setup_mask].sort_values(
         ["setup_score", "relative_return_5d", "distance_to_high20_pct"],
         ascending=[False, False, True],
     )
-    trigger = latest.loc[trigger_mask].sort_values(
-        ["trigger_score", "relative_return_5d", "volume_ratio"],
-        ascending=[False, False, False],
-    )
-    return setup, trigger
+    return setup
 
 
-def reason_labels(row: pd.Series, list_type: str) -> list[str]:
-    if list_type == "setup":
-        mapping = [
-            ("low_kd_cross", "KD 低檔交叉"),
-            ("return_20d_in_range", "20 日漲幅未過熱"),
-            ("near_breakout_zone", "接近 20 日高點"),
-            ("volume_dry", "量縮整理"),
-            ("volatility_compression", "波動收斂"),
-            ("ma20_near", "貼近 MA20"),
-            ("relative_strength_5d", "5 日相對強勢"),
-        ]
-    else:
-        mapping = [
-            ("breakout_20d", "突破 20 日高點"),
-            ("moderate_breakout_volume", "溫和放量"),
-            ("controlled_daily_move", "漲幅未過熱"),
-            ("relative_strength_5d", "5 日相對強勢"),
-        ]
+def reason_labels(row: pd.Series) -> list[str]:
+    mapping = [
+        ("trend_turn", "收盤 > MA5 > MA20"),
+        ("kd_acceleration", "KD 動能加速"),
+        ("return_5d_momentum", "5 日漲幅 1%～8%"),
+        ("relative_strength_5d", "5 日相對強勢"),
+        ("volume_momentum", "量比 1.0～2.5"),
+        ("early_breakout", "突破 10 日高點"),
+        ("volatility_release", "前日收斂、今日帶寬回升"),
+        ("near_breakout_zone", "距 20 日高點不超過 5%"),
+    ]
     return [label for field, label in mapping if bool(row.get(field, False))]
 
 
@@ -465,8 +451,7 @@ def finite(value: object, digits: int = 2) -> float | None:
     return round(number, digits) if math.isfinite(number) else None
 
 
-def records_for_web(frame: pd.DataFrame, list_type: str, limit: int) -> list[dict[str, object]]:
-    score_field = "setup_score" if list_type == "setup" else "trigger_score"
+def records_for_web(frame: pd.DataFrame, limit: int) -> list[dict[str, object]]:
     records = []
     for rank, (_, row) in enumerate(frame.head(limit).iterrows(), 1):
         records.append(
@@ -477,7 +462,7 @@ def records_for_web(frame: pd.DataFrame, list_type: str, limit: int) -> list[dic
                 "stock_name": row["stock_name"],
                 "close": finite(row["close"]),
                 "pct_change": finite(row["pct_change"]),
-                "score": int(row[score_field]),
+                "score": int(row["setup_score"]),
                 "k": finite(row["K"], 1),
                 "d": finite(row["D"], 1),
                 "volume_ratio": finite(row["volume_ratio"]),
@@ -486,7 +471,7 @@ def records_for_web(frame: pd.DataFrame, list_type: str, limit: int) -> list[dic
                 "return_20d": finite(row["return_20d"]),
                 "relative_return_5d": finite(row["relative_return_5d"]),
                 "distance_to_high20_pct": finite(row["distance_to_high20_pct"]),
-                "reasons": reason_labels(row, list_type),
+                "reasons": reason_labels(row),
             }
         )
     return records
@@ -495,7 +480,6 @@ def records_for_web(frame: pd.DataFrame, list_type: str, limit: int) -> list[dic
 def write_results(
     trade_date: pd.Timestamp,
     setup: pd.DataFrame,
-    trigger: pd.DataFrame,
     context: dict[str, object],
     universe_count: int,
     errors: list[dict[str, str]],
@@ -515,15 +499,14 @@ def write_results(
             "universe_count": universe_count,
             "download_errors": len(errors),
         },
-        "setup": records_for_web(setup, "setup", SETUP_LIMIT),
-        "trigger": records_for_web(trigger, "trigger", TRIGGER_LIMIT),
+        "setup": records_for_web(setup, SETUP_LIMIT),
     }
     encoded = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
     (DATA_DIR / "latest.json").write_text(encoded, encoding="utf-8")
     (ARCHIVE_DIR / f"{date_text}.json").write_text(encoded, encoding="utf-8")
 
     setup.to_csv(DATA_DIR / "setup_latest.csv", index=False, encoding="utf-8-sig")
-    trigger.to_csv(DATA_DIR / "trigger_latest.csv", index=False, encoding="utf-8-sig")
+    (DATA_DIR / "trigger_latest.csv").unlink(missing_ok=True)
     archive_dates = sorted((path.stem for path in ARCHIVE_DIR.glob("*.json")), reverse=True)
     (DATA_DIR / "index.json").write_text(
         json.dumps({"dates": archive_dates}, ensure_ascii=False, indent=2) + "\n",
@@ -546,11 +529,11 @@ def main() -> None:
     indicators = calculate_indicators(prices)
     latest = indicators[indicators["trade_date"] == latest_date].copy()
     latest, context = add_market_context(latest, benchmark, latest_date)
-    setup, trigger = score_lists(latest)
-    write_results(latest_date, setup, trigger, context, len(latest), errors)
+    setup = score_setup(latest)
+    write_results(latest_date, setup, context, len(latest), errors)
     print(
         f"完成 {latest_date.date()}：蓄勢 {min(len(setup), SETUP_LIMIT)} 檔，"
-        f"發動 {min(len(trigger), TRIGGER_LIMIT)} 檔，下載錯誤 {len(errors)} 筆"
+        f"下載錯誤 {len(errors)} 筆"
     )
 
 

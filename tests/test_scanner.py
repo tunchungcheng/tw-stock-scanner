@@ -62,7 +62,7 @@ def synthetic_prices() -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def test_dual_list_pipeline():
+def test_setup_pipeline():
     prices = synthetic_prices()
     latest_date = scanner.shared_latest_date(prices)
     indicators = scanner.calculate_indicators(prices)
@@ -74,8 +74,6 @@ def test_dual_list_pipeline():
         }
     )
     latest, context = scanner.add_market_context(latest, benchmark, latest_date)
-    setup, trigger = scanner.score_lists(latest)
+    setup = scanner.score_setup(latest)
     assert context["benchmark_source"] == "TAIEX"
     assert "setup_score" in setup.columns
-    assert "trigger_score" in trigger.columns
-

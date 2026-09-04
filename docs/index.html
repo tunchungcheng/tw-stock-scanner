@@ -5,134 +5,134 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="台股動能蓄勢股票每日掃描結果">
   <title>台股動能雷達</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=20260904-2">
 </head>
 <body>
-<main class="shell">
-  <header class="topbar">
-    <div>
-      <p class="eyebrow">TWSE · TPEx</p>
-      <h1>台股動能雷達</h1>
-    </div>
-    <div class="date-control">
-      <label for="date-select">交易日</label>
-      <select id="date-select" aria-label="選擇歷史交易日">
-        <option value="latest">最新結果</option>
-      </select>
-    </div>
-  </header>
-
-  <section class="summary" aria-label="市場摘要">
-    <article class="summary-card primary">
-      <span>資料交易日</span>
-      <strong id="trade-date">—</strong>
-      <small id="generated-at">等待資料</small>
-    </article>
-    <article class="summary-card">
-      <span>大盤狀態</span>
-      <strong id="market-state">—</strong>
-      <small id="market-return">TAIEX 5 日報酬 —</small>
-    </article>
-    <article class="summary-card">
-      <span>蓄勢名單</span>
-      <strong id="setup-count">0</strong>
-      <small>尚未突破 20 日高點</small>
-    </article>
-  </section>
-
-  <details class="strategy-panel">
-    <summary>
-      <span>目前篩選條件</span>
-      <small>滿分 14 分 · 入選門檻 6 分</small>
-    </summary>
-    <div class="strategy-grid">
-      <section>
-        <h2>必要門檻</h2>
-        <ul class="rules compact">
-          <li><span>20 日平均成交額至少 3,000 萬元</span></li>
-          <li><span>尚未突破前 20 日最高價</span></li>
-          <li><span>未觸發任一過熱排除條件</span></li>
-          <li><span>加總分數至少 6 分，取前 20 名</span></li>
-        </ul>
-      </section>
-      <section class="scoring-rules">
-        <h2>加分條件</h2>
-        <ul class="rules">
-          <li><strong>+2</strong><span>收盤 &gt; MA5 &gt; MA20</span></li>
-          <li><strong>+2</strong><span>K 連續兩日上升且 K &gt; D</span></li>
-          <li><strong>+2</strong><span>5 日漲幅 1%～8%</span></li>
-          <li><strong>+2</strong><span>5 日報酬優於大盤</span></li>
-          <li><strong>+2</strong><span>今日量比 1.0～2.5</span></li>
-          <li><strong>+2</strong><span>突破 10 日高點、未突破 20 日高點</span></li>
-          <li><strong>+1</strong><span>前一日波動收斂，今日布林帶寬回升</span></li>
-          <li><strong>+1</strong><span>距 20 日高點不超過 5%</span></li>
-        </ul>
-        <p>這是加分制，不要求八項全部成立；入選原因會顯示實際得分項目。</p>
-      </section>
-      <section>
-        <h2>排除過熱</h2>
-        <ul class="rules compact danger">
-          <li><span>5 日漲幅超過 10%</span></li>
-          <li><span>20 日漲幅超過 20%</span></li>
-          <li><span>收盤超過 MA20 的 112%</span></li>
-          <li><span>量比超過 4 倍</span></li>
-        </ul>
-      </section>
-    </div>
-  </details>
-
-  <section class="workspace">
-    <div class="toolbar">
-      <div class="list-heading">
-        <strong>蓄勢名單</strong>
-        <span>依分數、相對強勢與距高點排序</span>
+  <main class="shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">TWSE · TPEx</p>
+        <h1>台股動能雷達</h1>
       </div>
-      <div class="tools">
-        <label class="reason-sort">
-          <span class="sr-only">依入選原因排序</span>
-          <select id="reason-sort" aria-label="依入選原因排序">
-            <option value="">依入選原因排序</option>
-          </select>
-        </label>
-        <label class="search">
-          <span class="sr-only">搜尋代號或名稱</span>
-          <input id="search-input" type="search" placeholder="搜尋代號或名稱">
-        </label>
-        <a class="download" id="csv-link" href="data/setup_latest.csv" download>下載 CSV</a>
+      <div class="date-control">
+        <label for="date-select">交易日</label>
+        <select id="date-select" aria-label="選擇歷史交易日">
+          <option value="latest">最新結果</option>
+        </select>
       </div>
-    </div>
+    </header>
 
-    <div class="table-wrap">
-      <table>
-        <thead>
-        <tr>
-          <th data-sort="rank">排名</th>
-          <th data-sort="stock_id">股票</th>
-          <th data-sort="score">分數</th>
-          <th data-sort="close">收盤</th>
-          <th data-sort="pct_change">當日</th>
-          <th data-sort="return_5d">5 日</th>
-          <th data-sort="return_20d">20 日</th>
-          <th data-sort="volume_ratio">量比</th>
-          <th data-sort="k">K / D</th>
-          <th data-sort="distance_to_high20_pct">距高點</th>
-          <th data-sort="reasons">入選原因</th>
-        </tr>
-        </thead>
-        <tbody id="result-body"></tbody>
-      </table>
-      <div class="empty" id="empty-state" hidden>
-        <strong>目前沒有符合條件的股票</strong>
-        <span>嚴格條件下出現空名單是正常結果。</span>
+    <section class="summary" aria-label="市場摘要">
+      <article class="summary-card primary">
+        <span>資料交易日</span>
+        <strong id="trade-date">—</strong>
+        <small id="generated-at">等待資料</small>
+      </article>
+      <article class="summary-card">
+        <span>大盤狀態</span>
+        <strong id="market-state">—</strong>
+        <small id="market-return">TAIEX 5 日報酬 —</small>
+      </article>
+      <article class="summary-card">
+        <span>蓄勢名單</span>
+        <strong id="setup-count">0</strong>
+        <small>尚未突破 20 日高點</small>
+      </article>
+    </section>
+
+    <details class="strategy-panel">
+      <summary>
+        <span>目前篩選條件</span>
+        <small>滿分 14 分 · 入選門檻 6 分</small>
+      </summary>
+      <div class="strategy-grid">
+        <section>
+          <h2>必要門檻</h2>
+          <ul class="rules compact">
+            <li><span>20 日平均成交額至少 3,000 萬元</span></li>
+            <li><span>尚未突破前 20 日最高價</span></li>
+            <li><span>未觸發任一過熱排除條件</span></li>
+            <li><span>加總分數至少 6 分，取前 20 名</span></li>
+          </ul>
+        </section>
+        <section class="scoring-rules">
+          <h2>加分條件</h2>
+          <ul class="rules">
+            <li><strong>+2</strong><span>收盤 &gt; MA5 &gt; MA20</span></li>
+            <li><strong>+2</strong><span>K 連續兩日上升且 K &gt; D</span></li>
+            <li><strong>+2</strong><span>5 日漲幅 1%～8%</span></li>
+            <li><strong>+2</strong><span>5 日報酬優於大盤</span></li>
+            <li><strong>+2</strong><span>今日量比 1.0～2.5</span></li>
+            <li><strong>+2</strong><span>突破 10 日高點、未突破 20 日高點</span></li>
+            <li><strong>+1</strong><span>前一日波動收斂，今日布林帶寬回升</span></li>
+            <li><strong>+1</strong><span>距 20 日高點不超過 5%</span></li>
+          </ul>
+          <p>這是加分制，不要求八項全部成立；入選原因會顯示實際得分項目。</p>
+        </section>
+        <section>
+          <h2>排除過熱</h2>
+          <ul class="rules compact danger">
+            <li><span>5 日漲幅超過 10%</span></li>
+            <li><span>20 日漲幅超過 20%</span></li>
+            <li><span>收盤超過 MA20 的 112%</span></li>
+            <li><span>量比超過 4 倍</span></li>
+          </ul>
+        </section>
       </div>
-    </div>
-  </section>
+    </details>
 
-  <footer>
-    <span id="data-note">收盤後訊號，僅供研究。</span>
-    <span>價格未還原 · 下個交易日才可執行</span>
-  </footer>
-</main>
-<script src="app.js" defer></script>
+    <section class="workspace">
+      <div class="toolbar">
+        <div class="list-heading">
+          <strong>蓄勢名單</strong>
+          <span>依分數、相對強勢與距高點排序</span>
+        </div>
+        <div class="tools">
+          <label class="reason-sort">
+            <span class="sr-only">依入選原因排序</span>
+            <select id="reason-sort" aria-label="依入選原因排序">
+              <option value="">依入選原因排序</option>
+            </select>
+          </label>
+          <label class="search">
+            <span class="sr-only">搜尋代號或名稱</span>
+            <input id="search-input" type="search" placeholder="搜尋代號或名稱">
+          </label>
+          <a class="download" id="csv-link" href="data/setup_latest.csv" download>下載 CSV</a>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th data-sort="rank">排名</th>
+              <th data-sort="stock_id">股票</th>
+              <th data-sort="score">分數</th>
+              <th data-sort="close">收盤</th>
+              <th data-sort="pct_change">當日</th>
+              <th data-sort="return_5d">5 日</th>
+              <th data-sort="return_20d">20 日</th>
+              <th data-sort="volume_ratio">量比</th>
+              <th data-sort="k">K / D</th>
+              <th data-sort="distance_to_high20_pct">距高點</th>
+              <th data-sort="reasons">入選原因</th>
+            </tr>
+          </thead>
+          <tbody id="result-body"></tbody>
+        </table>
+        <div class="empty" id="empty-state" hidden>
+          <strong>目前沒有符合條件的股票</strong>
+          <span>嚴格條件下出現空名單是正常結果。</span>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <span id="data-note">收盤後訊號，僅供研究。</span>
+      <span>價格未還原 · 下個交易日才可執行</span>
+    </footer>
+  </main>
+  <script src="app.js?v=20260904-2" defer></script>
 </body>
 </html>

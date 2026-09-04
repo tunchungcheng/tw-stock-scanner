@@ -1,29 +1,21 @@
 const state = {
-  data: { setup: [], trigger: [], meta: {} },
-  activeList: "setup",
+  data: { setup: [], meta: {} },
   query: "",
   sortKey: "rank",
   sortDirection: 1,
   reasonPriority: "",
 };
 
-const reasonOptions = {
-  setup: [
-    "KD 低檔交叉",
-    "20 日漲幅未過熱",
-    "接近 20 日高點",
-    "量縮整理",
-    "波動收斂",
-    "貼近 MA20",
+const reasonOptions = [
+    "收盤 > MA5 > MA20",
+    "KD 動能加速",
+    "5 日漲幅 1%～8%",
     "5 日相對強勢",
-  ],
-  trigger: [
-    "突破 20 日高點",
-    "溫和放量",
-    "漲幅未過熱",
-    "5 日相對強勢",
-  ],
-};
+    "量比 1.0～2.5",
+    "突破 10 日高點",
+    "前日收斂、今日帶寬回升",
+    "距 20 日高點不超過 5%",
+];
 
 const els = {
   body: document.querySelector("#result-body"),
@@ -47,28 +39,31 @@ const tone = (value) => Number(value) > 0 ? "positive" : Number(value) < 0 ? "ne
 const escapeHtml = (value) => String(value ?? "").replace(/[&<>'"]/g, (character) => ({
   "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;",
 })[character]);
+const setText = (selector, value) => {
+  const element = document.querySelector(selector);
+  if (element) element.textContent = value;
+};
 
 function updateSummary() {
   const meta = state.data.meta || {};
-  document.querySelector("#trade-date").textContent = meta.trade_date || "—";
-  document.querySelector("#generated-at").textContent = meta.generated_at
+  setText("#trade-date", meta.trade_date || "—");
+  setText("#generated-at", meta.generated_at
     ? `更新 ${new Date(meta.generated_at).toLocaleString("zh-TW")}`
-    : meta.message || "等待資料";
-  document.querySelector("#market-state").textContent = meta.market_above_ma60 === undefined
+    : meta.message || "等待資料");
+  setText("#market-state", meta.market_above_ma60 === undefined
     ? "—"
-    : meta.market_above_ma60 ? "MA60 多頭" : "MA60 偏弱";
-  document.querySelector("#market-return").textContent = meta.market_return_5d === undefined
+    : meta.market_above_ma60 ? "MA60 多頭" : "MA60 偏弱");
+  setText("#market-return", meta.market_return_5d === undefined
     ? "TAIEX 5 日報酬 —"
-    : `${meta.benchmark_source} 5 日 ${signed(meta.market_return_5d)}`;
-  document.querySelector("#setup-count").textContent = state.data.setup?.length || 0;
-  document.querySelector("#trigger-count").textContent = state.data.trigger?.length || 0;
-  document.querySelector("#data-note").textContent = meta.download_errors
+    : `${meta.benchmark_source} 5 日 ${signed(meta.market_return_5d)}`);
+  setText("#setup-count", state.data.setup?.length || 0);
+  setText("#data-note", meta.download_errors
     ? `本次有 ${meta.download_errors} 筆下載錯誤，請查看 workflow 紀錄。`
-    : "收盤後訊號，僅供研究。";
+    : "收盤後訊號，僅供研究。");
 }
 
 function visibleRows() {
-  const rows = [...(state.data[state.activeList] || [])];
+  const rows = [...(state.data.setup || [])];
   const query = state.query.trim().toLowerCase();
   const filtered = query
     ? rows.filter((row) => `${row.stock_id} ${row.stock_name}`.toLowerCase().includes(query))
@@ -91,19 +86,21 @@ function visibleRows() {
 }
 
 function updateReasonOptions() {
+  if (!els.reasonSort) return;
   const current = state.reasonPriority;
   els.reasonSort.innerHTML = '<option value="">依入選原因排序</option>';
-  reasonOptions[state.activeList].forEach((reason) => {
+  reasonOptions.forEach((reason) => {
     const option = document.createElement("option");
     option.value = reason;
     option.textContent = reason;
     els.reasonSort.append(option);
   });
-  els.reasonSort.value = reasonOptions[state.activeList].includes(current) ? current : "";
+  els.reasonSort.value = reasonOptions.includes(current) ? current : "";
   state.reasonPriority = els.reasonSort.value;
 }
 
 function render() {
+  if (!els.body || !els.empty) return;
   const rows = visibleRows();
   els.body.innerHTML = rows.map((row) => `
     <tr>
@@ -116,7 +113,7 @@ function render() {
       <td class="${tone(row.return_20d)}">${signed(row.return_20d)}</td>
       <td>${number(row.volume_ratio)}×</td>
       <td>${number(row.k, 1)} / ${number(row.d, 1)}</td>
-      <td>${state.activeList === "trigger" ? "已突破" : signed(row.distance_to_high20_pct)}</td>
+      <td>${signed(row.distance_to_high20_pct)}</td>
       <td>${(row.reasons || []).map((reason) => `<span class="tag">${escapeHtml(reason)}</span>`).join("")}</td>
     </tr>
   `).join("");
@@ -124,6 +121,7 @@ function render() {
 }
 
 async function loadData(path = "data/latest.json") {
+  if (!els.body || !els.empty) return;
   els.body.innerHTML = "";
   els.empty.hidden = true;
   try {
@@ -134,12 +132,15 @@ async function loadData(path = "data/latest.json") {
     render();
   } catch (error) {
     els.empty.hidden = false;
-    els.empty.querySelector("strong").textContent = "資料載入失敗";
-    els.empty.querySelector("span").textContent = error.message;
+    const title = els.empty.querySelector("strong");
+    const detail = els.empty.querySelector("span");
+    if (title) title.textContent = "資料載入失敗";
+    if (detail) detail.textContent = error.message;
   }
 }
 
 async function loadDates() {
+  if (!els.dateSelect) return;
   try {
     const response = await fetch("data/index.json", { cache: "no-store" });
     const { dates = [] } = await response.json();
@@ -154,36 +155,19 @@ async function loadDates() {
   }
 }
 
-document.querySelectorAll(".tab").forEach((button) => {
-  button.addEventListener("click", () => {
-    document.querySelectorAll(".tab").forEach((tab) => {
-      const active = tab === button;
-      tab.classList.toggle("active", active);
-      tab.setAttribute("aria-selected", String(active));
-    });
-    state.activeList = button.dataset.list;
-    state.sortKey = "rank";
-    state.sortDirection = 1;
-    state.reasonPriority = "";
-    updateReasonOptions();
-    els.csv.href = `data/${state.activeList}_latest.csv`;
-    render();
-  });
-});
-
-els.reasonSort.addEventListener("change", (event) => {
+els.reasonSort?.addEventListener("change", (event) => {
   state.reasonPriority = event.target.value;
   state.sortKey = "rank";
   state.sortDirection = 1;
   render();
 });
 
-els.search.addEventListener("input", (event) => {
+els.search?.addEventListener("input", (event) => {
   state.query = event.target.value;
   render();
 });
 
-els.dateSelect.addEventListener("change", (event) => {
+els.dateSelect?.addEventListener("change", (event) => {
   const value = event.target.value;
   loadData(value === "latest" ? "data/latest.json" : `data/archive/${value}.json`);
 });

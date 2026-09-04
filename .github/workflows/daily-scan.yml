@@ -26,18 +26,22 @@ jobs:
         uses: actions/checkout@v5
 
       - name: 設定 Python
+        if: github.event_name != 'push'
         uses: actions/setup-python@v6
         with:
           python-version: "3.12"
           cache: pip
 
       - name: 安裝套件
+        if: github.event_name != 'push'
         run: python -m pip install -r requirements.txt
 
       - name: 執行台股掃描
+        if: github.event_name != 'push'
         run: python scanner.py
 
       - name: 保存每日結果
+        if: github.event_name != 'push'
         run: |
           if [[ -n "$(git status --porcelain docs/data)" ]]; then
             git config user.name "github-actions[bot]"

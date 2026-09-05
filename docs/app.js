@@ -112,6 +112,7 @@ function render() {
       <td class="rank">${row.rank}</td>
       <td><a class="stock-link" href="${stockInfoUrl(row)}" target="_blank" rel="noopener noreferrer"><span class="stock"><strong>${escapeHtml(row.stock_id)} ${escapeHtml(row.stock_name)}</strong><span>${escapeHtml(row.market)} · 查看股票資訊 ↗</span></span></a></td>
       <td class="industry">${escapeHtml(row.industry || "未分類")}</td>
+      <td class="${tone(row.revenue_yoy)}"><span class="revenue"><strong>${signed(row.revenue_yoy)}</strong><span>${escapeHtml(row.revenue_month || "月份未提供")}</span></span></td>
       <td class="score">${row.score}</td>
       <td>${number(row.close)}</td>
       <td class="${tone(row.pct_change)}">${signed(row.pct_change)}</td>

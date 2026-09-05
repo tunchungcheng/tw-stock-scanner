@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="台股動能蓄勢股票每日掃描結果">
   <title>台股動能雷達</title>
-  <link rel="stylesheet" href="styles.css?v=20260905-1">
+  <link rel="stylesheet" href="styles.css?v=20260905-2">
 </head>
 <body>
   <main class="shell">
@@ -50,6 +50,7 @@
           <h2>必要門檻</h2>
           <ul class="rules compact">
             <li><span>20 日平均成交額至少 3,000 萬元</span></li>
+            <li><span>最新月營收 YoY 至少 30%</span></li>
             <li><span>尚未突破前 20 日最高價</span></li>
             <li><span>未觸發任一過熱排除條件</span></li>
             <li><span>加總分數至少 6 分，取前 20 名</span></li>
@@ -109,6 +110,7 @@
               <th data-sort="rank">排名</th>
               <th data-sort="stock_id">股票</th>
               <th data-sort="industry">產業</th>
+              <th data-sort="revenue_yoy">月營收 YoY</th>
               <th data-sort="score">分數</th>
               <th data-sort="close">收盤</th>
               <th data-sort="pct_change">當日</th>
@@ -134,6 +136,6 @@
       <span>價格未還原 · 下個交易日才可執行</span>
     </footer>
   </main>
-  <script src="app.js?v=20260905-1" defer></script>
+  <script src="app.js?v=20260905-2" defer></script>
 </body>
 </html>

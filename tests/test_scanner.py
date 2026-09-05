@@ -55,6 +55,29 @@ def test_company_profile_normalization():
     assert "0050" not in profiles["stock_id"].tolist()
 
 
+def test_monthly_revenue_normalization():
+    payload = [
+        {
+            "資料年月": "11507",
+            "公司代號": "2330",
+            "營業收入-去年同月增減(%)": "32.5",
+            "累計營業收入-前期比較增減(%)": "18.2",
+        },
+        {
+            "資料年月": "11507",
+            "公司代號": "0050",
+            "營業收入-去年同月增減(%)": "99",
+            "累計營業收入-前期比較增減(%)": "99",
+        },
+    ]
+    revenue = scanner.normalize_monthly_revenue(payload, [])
+    row = revenue.iloc[0]
+    assert row["stock_id"] == "2330"
+    assert row["revenue_month"] == "2026-07"
+    assert row["revenue_yoy"] == 32.5
+    assert "0050" not in revenue["stock_id"].tolist()
+
+
 def synthetic_prices() -> pd.DataFrame:
     rows = []
     dates = pd.bdate_range("2026-01-01", periods=100)
@@ -98,6 +121,8 @@ def test_setup_pipeline():
         }
     )
     latest, context = scanner.add_market_context(latest, benchmark, latest_date)
+    latest["revenue_yoy"] = 40.0
     setup = scanner.score_setup(latest)
     assert context["benchmark_source"] == "TAIEX"
     assert "setup_score" in setup.columns
+    assert setup["revenue_yoy"].ge(scanner.MIN_REVENUE_YOY).all()

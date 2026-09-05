@@ -163,6 +163,8 @@ tbody tr:hover { background: rgba(68, 215, 232, .035); }
 .stock strong { color: var(--text); }
 .stock span { color: var(--muted); font-size: .8rem; }
 .industry { color: #b8cbe0; }
+.revenue { display: grid; }
+.revenue span { color: var(--muted); font-size: .8rem; }
 .score { color: var(--lime); font-weight: 800; font-size: 1.05rem; }
 .positive { color: var(--red); }
 .negative { color: #73b9ff; }

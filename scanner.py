@@ -22,10 +22,13 @@ TWSE_URL = "https://www.twse.com.tw/exchangeReport/MI_INDEX"
 TPEX_URL = "https://www.tpex.org.tw/www/zh-tw/afterTrading/dailyQuotes"
 TWSE_PROFILE_URL = "https://openapi.twse.com.tw/v1/opendata/t187ap03_L"
 TPEX_PROFILE_URL = "https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap03_O"
+TWSE_REVENUE_URL = "https://openapi.twse.com.tw/v1/opendata/t187ap05_L"
+TPEX_REVENUE_URL = "https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap05_O"
 
 BACKFILL_CALENDAR_DAYS = 150
 REQUEST_INTERVAL_SECONDS = 0.25
 MIN_AVG_TURNOVER_20 = 30_000_000
+MIN_REVENUE_YOY = 30.0
 SETUP_MIN_SCORE = 6
 SETUP_LIMIT = 20
 
@@ -172,6 +175,55 @@ def collect_company_profiles() -> tuple[pd.DataFrame, list[dict[str, str]]]:
         except Exception as exc:
             errors.append({"date": "company-profile", "market": market, "error": str(exc)})
     return normalize_company_profiles(payloads["TWSE"], payloads["TPEx"]), errors
+
+
+def normalize_revenue_month(value: object) -> str:
+    text = re.sub(r"\D", "", str(value or ""))
+    if len(text) != 5:
+        return ""
+    year = int(text[:3]) + 1911
+    month = int(text[3:])
+    return f"{year:04d}-{month:02d}" if 1 <= month <= 12 else ""
+
+
+def normalize_monthly_revenue(
+    twse_payload: object, tpex_payload: object
+) -> pd.DataFrame:
+    records: list[dict[str, object]] = []
+    for market, payload in (("TWSE", twse_payload), ("TPEx", tpex_payload)):
+        if not isinstance(payload, list):
+            continue
+        for row in payload:
+            if not isinstance(row, dict):
+                continue
+            stock_id = str(row.get("公司代號", "")).strip()
+            if not re.fullmatch(r"[1-9]\d{3}", stock_id):
+                continue
+            records.append(
+                {
+                    "market": market,
+                    "stock_id": stock_id,
+                    "revenue_month": normalize_revenue_month(row.get("資料年月")),
+                    "revenue_yoy": clean_number(row.get("營業收入-去年同月增減(%)")),
+                    "revenue_ytd_yoy": clean_number(
+                        row.get("累計營業收入-前期比較增減(%)")
+                    ),
+                }
+            )
+    columns = ["market", "stock_id", "revenue_month", "revenue_yoy", "revenue_ytd_yoy"]
+    return pd.DataFrame(records, columns=columns).drop_duplicates(
+        ["market", "stock_id"], keep="last"
+    )
+
+
+def collect_monthly_revenue() -> pd.DataFrame:
+    twse_payload = get_json(TWSE_REVENUE_URL, {})
+    tpex_payload = get_json(TPEX_REVENUE_URL, {})
+    revenue = normalize_monthly_revenue(twse_payload, tpex_payload)
+    counts = revenue.groupby("market")["stock_id"].nunique()
+    if any(counts.get(market, 0) < 100 for market in ("TWSE", "TPEx")):
+        raise RuntimeError(f"月營收資料筆數異常，停止發布：{counts.to_dict()}")
+    return revenue
 
 
 def iter_tables(obj: object):
@@ -507,6 +559,7 @@ def score_setup(latest: pd.DataFrame) -> pd.DataFrame:
         & latest["return_20d"].notna()
         & latest["volume_ratio"].notna()
         & latest["MA20"].notna()
+        & latest["revenue_yoy"].ge(MIN_REVENUE_YOY)
     )
     setup_mask = (
         valid
@@ -554,6 +607,8 @@ def records_for_web(frame: pd.DataFrame, limit: int) -> list[dict[str, object]]:
                 "stock_id": row["stock_id"],
                 "stock_name": row["stock_name"],
                 "industry": row.get("industry", "未分類"),
+                "revenue_month": row.get("revenue_month", ""),
+                "revenue_yoy": finite(row.get("revenue_yoy")),
                 "close": finite(row["close"]),
                 "pct_change": finite(row["pct_change"]),
                 "score": int(row["setup_score"]),
@@ -616,6 +671,7 @@ def main() -> None:
     today = datetime.now(ZoneInfo("Asia/Taipei")).date()
     prices, benchmark, errors = collect_history(today)
     profiles, profile_errors = collect_company_profiles()
+    revenue = collect_monthly_revenue()
     errors.extend(profile_errors)
     sessions = prices.groupby("market")["trade_date"].nunique()
     if any(sessions.get(market, 0) < 70 for market in ("TWSE", "TPEx")):
@@ -625,6 +681,7 @@ def main() -> None:
     indicators = calculate_indicators(prices)
     latest = indicators[indicators["trade_date"] == latest_date].copy()
     latest = latest.merge(profiles, on=["market", "stock_id"], how="left")
+    latest = latest.merge(revenue, on=["market", "stock_id"], how="left")
     latest["industry"] = latest["industry"].fillna("未分類")
     latest["industry_code"] = latest["industry_code"].fillna("")
     latest, context = add_market_context(latest, benchmark, latest_date)

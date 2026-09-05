@@ -31,6 +31,30 @@ def test_twse_parser_and_index():
     assert index.iloc[0]["close"] == 22345.67
 
 
+def test_company_profile_normalization():
+    twse_payload = [
+        {"公司代號": "2330", "公司名稱": "台積電", "產業別": "24"},
+        {"公司代號": "0050", "公司名稱": "元大台灣50", "產業別": ""},
+    ]
+    tpex_payload = [
+        {
+            "SecuritiesCompanyCode": "6488",
+            "CompanyName": "環球晶",
+            "SecuritiesIndustryCode": "24",
+        },
+        {
+            "SecuritiesCompanyCode": "9999",
+            "CompanyName": "測試公司",
+            "SecuritiesIndustryCode": "99",
+        },
+    ]
+    profiles = scanner.normalize_company_profiles(twse_payload, tpex_payload)
+    assert profiles.set_index("stock_id").loc["2330", "industry"] == "半導體業"
+    assert profiles.set_index("stock_id").loc["6488", "market"] == "TPEx"
+    assert profiles.set_index("stock_id").loc["9999", "industry"] == "產業代碼 99"
+    assert "0050" not in profiles["stock_id"].tolist()
+
+
 def synthetic_prices() -> pd.DataFrame:
     rows = []
     dates = pd.bdate_range("2026-01-01", periods=100)

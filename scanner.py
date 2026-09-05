@@ -20,12 +20,53 @@ ARCHIVE_DIR = DATA_DIR / "archive"
 
 TWSE_URL = "https://www.twse.com.tw/exchangeReport/MI_INDEX"
 TPEX_URL = "https://www.tpex.org.tw/www/zh-tw/afterTrading/dailyQuotes"
+TWSE_PROFILE_URL = "https://openapi.twse.com.tw/v1/opendata/t187ap03_L"
+TPEX_PROFILE_URL = "https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap03_O"
 
 BACKFILL_CALENDAR_DAYS = 150
 REQUEST_INTERVAL_SECONDS = 0.25
 MIN_AVG_TURNOVER_20 = 30_000_000
 SETUP_MIN_SCORE = 6
 SETUP_LIMIT = 20
+
+INDUSTRY_NAMES = {
+    "01": "水泥工業",
+    "02": "食品工業",
+    "03": "塑膠工業",
+    "04": "紡織纖維",
+    "05": "電機機械",
+    "06": "電器電纜",
+    "08": "玻璃陶瓷",
+    "09": "造紙工業",
+    "10": "鋼鐵工業",
+    "11": "橡膠工業",
+    "12": "汽車工業",
+    "14": "建材營造",
+    "15": "航運業",
+    "16": "觀光餐旅",
+    "17": "金融保險",
+    "18": "貿易百貨",
+    "19": "綜合",
+    "20": "其他",
+    "21": "化學工業",
+    "22": "生技醫療業",
+    "23": "油電燃氣業",
+    "24": "半導體業",
+    "25": "電腦及週邊設備業",
+    "26": "光電業",
+    "27": "通信網路業",
+    "28": "電子零組件業",
+    "29": "電子通路業",
+    "30": "資訊服務業",
+    "31": "其他電子業",
+    "32": "文化創意業",
+    "33": "農業科技業",
+    "34": "電子商務",
+    "35": "綠能環保",
+    "36": "數位雲端",
+    "37": "運動休閒",
+    "38": "居家生活",
+}
 
 ALIASES = {
     "stock_id": {"證券代號", "代號", "股票代號", "SecuritiesCompanyCode", "Code"},
@@ -61,7 +102,8 @@ def clean_number(value: object) -> float:
 
 
 def get_json(url: str, params: dict[str, str], attempts: int = 3) -> object:
-    full_url = f"{url}?{urlencode(params)}"
+    query = urlencode(params)
+    full_url = f"{url}?{query}" if query else url
     last_error: Exception | None = None
     for attempt in range(attempts):
         try:
@@ -79,6 +121,57 @@ def get_json(url: str, params: dict[str, str], attempts: int = 3) -> object:
             if attempt + 1 < attempts:
                 time.sleep(1.5 * (attempt + 1))
     raise RuntimeError(f"下載失敗：{url}，{last_error}")
+
+
+def normalize_industry_code(value: object) -> str:
+    text = str(value or "").strip().replace("－", "").replace("-", "")
+    return text.zfill(2) if text.isdigit() else text
+
+
+def normalize_company_profiles(
+    twse_payload: object | None, tpex_payload: object | None
+) -> pd.DataFrame:
+    specs = [
+        ("TWSE", twse_payload, "公司代號", "產業別"),
+        ("TPEx", tpex_payload, "SecuritiesCompanyCode", "SecuritiesIndustryCode"),
+    ]
+    records: list[dict[str, str]] = []
+    for market, payload, stock_field, industry_field in specs:
+        if not isinstance(payload, list):
+            continue
+        for row in payload:
+            if not isinstance(row, dict):
+                continue
+            stock_id = str(row.get(stock_field, "")).strip()
+            if not re.fullmatch(r"[1-9]\d{3}", stock_id):
+                continue
+            industry_code = normalize_industry_code(row.get(industry_field))
+            industry = INDUSTRY_NAMES.get(industry_code)
+            if not industry:
+                industry = f"產業代碼 {industry_code}" if industry_code else "未分類"
+            records.append(
+                {
+                    "market": market,
+                    "stock_id": stock_id,
+                    "industry_code": industry_code,
+                    "industry": industry,
+                }
+            )
+    columns = ["market", "stock_id", "industry_code", "industry"]
+    return pd.DataFrame(records, columns=columns).drop_duplicates(
+        ["market", "stock_id"], keep="last"
+    )
+
+
+def collect_company_profiles() -> tuple[pd.DataFrame, list[dict[str, str]]]:
+    payloads: dict[str, object | None] = {"TWSE": None, "TPEx": None}
+    errors: list[dict[str, str]] = []
+    for market, url in (("TWSE", TWSE_PROFILE_URL), ("TPEx", TPEX_PROFILE_URL)):
+        try:
+            payloads[market] = get_json(url, {})
+        except Exception as exc:
+            errors.append({"date": "company-profile", "market": market, "error": str(exc)})
+    return normalize_company_profiles(payloads["TWSE"], payloads["TPEx"]), errors
 
 
 def iter_tables(obj: object):
@@ -460,6 +553,7 @@ def records_for_web(frame: pd.DataFrame, limit: int) -> list[dict[str, object]]:
                 "market": row["market"],
                 "stock_id": row["stock_id"],
                 "stock_name": row["stock_name"],
+                "industry": row.get("industry", "未分類"),
                 "close": finite(row["close"]),
                 "pct_change": finite(row["pct_change"]),
                 "score": int(row["setup_score"]),
@@ -521,6 +615,8 @@ def write_results(
 def main() -> None:
     today = datetime.now(ZoneInfo("Asia/Taipei")).date()
     prices, benchmark, errors = collect_history(today)
+    profiles, profile_errors = collect_company_profiles()
+    errors.extend(profile_errors)
     sessions = prices.groupby("market")["trade_date"].nunique()
     if any(sessions.get(market, 0) < 70 for market in ("TWSE", "TPEx")):
         raise RuntimeError(f"有效歷史交易日不足，停止發布：{sessions.to_dict()}")
@@ -528,6 +624,9 @@ def main() -> None:
     prices = prices[prices["trade_date"] <= latest_date]
     indicators = calculate_indicators(prices)
     latest = indicators[indicators["trade_date"] == latest_date].copy()
+    latest = latest.merge(profiles, on=["market", "stock_id"], how="left")
+    latest["industry"] = latest["industry"].fillna("未分類")
+    latest["industry_code"] = latest["industry_code"].fillna("")
     latest, context = add_market_context(latest, benchmark, latest_date)
     setup = score_setup(latest)
     write_results(latest_date, setup, context, len(latest), errors)

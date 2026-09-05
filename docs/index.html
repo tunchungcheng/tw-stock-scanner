@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="台股動能蓄勢股票每日掃描結果">
   <title>台股動能雷達</title>
-  <link rel="stylesheet" href="styles.css?v=20260904-2">
+  <link rel="stylesheet" href="styles.css?v=20260905-1">
 </head>
 <body>
   <main class="shell">
@@ -95,8 +95,8 @@
             </select>
           </label>
           <label class="search">
-            <span class="sr-only">搜尋代號或名稱</span>
-            <input id="search-input" type="search" placeholder="搜尋代號或名稱">
+            <span class="sr-only">搜尋代號、名稱或產業</span>
+            <input id="search-input" type="search" placeholder="搜尋代號、名稱或產業">
           </label>
           <a class="download" id="csv-link" href="data/setup_latest.csv" download>下載 CSV</a>
         </div>
@@ -108,6 +108,7 @@
             <tr>
               <th data-sort="rank">排名</th>
               <th data-sort="stock_id">股票</th>
+              <th data-sort="industry">產業</th>
               <th data-sort="score">分數</th>
               <th data-sort="close">收盤</th>
               <th data-sort="pct_change">當日</th>
@@ -133,6 +134,6 @@
       <span>價格未還原 · 下個交易日才可執行</span>
     </footer>
   </main>
-  <script src="app.js?v=20260904-2" defer></script>
+  <script src="app.js?v=20260905-1" defer></script>
 </body>
 </html>

@@ -44,6 +44,11 @@ const setText = (selector, value) => {
   if (element) element.textContent = value;
 };
 
+const stockInfoUrl = (row) => {
+  const suffix = row.market === "TPEx" ? "TWO" : "TW";
+  return `https://tw.stock.yahoo.com/quote/${encodeURIComponent(row.stock_id)}.${suffix}`;
+};
+
 function updateSummary() {
   const meta = state.data.meta || {};
   setText("#trade-date", meta.trade_date || "—");
@@ -66,7 +71,7 @@ function visibleRows() {
   const rows = [...(state.data.setup || [])];
   const query = state.query.trim().toLowerCase();
   const filtered = query
-    ? rows.filter((row) => `${row.stock_id} ${row.stock_name}`.toLowerCase().includes(query))
+    ? rows.filter((row) => `${row.stock_id} ${row.stock_name} ${row.industry || "未分類"}`.toLowerCase().includes(query))
     : rows;
   return filtered.sort((a, b) => {
     if (state.reasonPriority) {
@@ -105,7 +110,8 @@ function render() {
   els.body.innerHTML = rows.map((row) => `
     <tr>
       <td class="rank">${row.rank}</td>
-      <td><span class="stock"><strong>${escapeHtml(row.stock_id)} ${escapeHtml(row.stock_name)}</strong><span>${escapeHtml(row.market)}</span></span></td>
+      <td><a class="stock-link" href="${stockInfoUrl(row)}" target="_blank" rel="noopener noreferrer"><span class="stock"><strong>${escapeHtml(row.stock_id)} ${escapeHtml(row.stock_name)}</strong><span>${escapeHtml(row.market)} · 查看股票資訊 ↗</span></span></a></td>
+      <td class="industry">${escapeHtml(row.industry || "未分類")}</td>
       <td class="score">${row.score}</td>
       <td>${number(row.close)}</td>
       <td class="${tone(row.pct_change)}">${signed(row.pct_change)}</td>

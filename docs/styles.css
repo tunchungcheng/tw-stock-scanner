@@ -154,12 +154,15 @@ select:focus, input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgb
 table { width: 100%; border-collapse: collapse; white-space: nowrap; }
 th, td { padding: 13px 14px; border-bottom: 1px solid rgba(32, 54, 82, .72); text-align: right; }
 th { position: sticky; top: 0; background: #0b1829; color: var(--muted); font-size: .78rem; font-weight: 700; cursor: pointer; }
-th:nth-child(2), td:nth-child(2), th:last-child, td:last-child { text-align: left; }
+th:nth-child(2), td:nth-child(2), th:nth-child(3), td:nth-child(3), th:last-child, td:last-child { text-align: left; }
 tbody tr:hover { background: rgba(68, 215, 232, .035); }
 .rank { color: var(--muted); font-variant-numeric: tabular-nums; }
+.stock-link { color: inherit; text-decoration: none; }
+.stock-link:hover strong { color: var(--cyan); }
 .stock { display: grid; }
 .stock strong { color: var(--text); }
 .stock span { color: var(--muted); font-size: .8rem; }
+.industry { color: #b8cbe0; }
 .score { color: var(--lime); font-weight: 800; font-size: 1.05rem; }
 .positive { color: var(--red); }
 .negative { color: #73b9ff; }

@@ -1,4 +1,5 @@
 from datetime import date
+import json
 
 import numpy as np
 import pandas as pd
@@ -74,6 +75,7 @@ def test_monthly_revenue_normalization():
     row = revenue.iloc[0]
     assert row["stock_id"] == "2330"
     assert row["revenue_month"] == "2026-07"
+    assert row["revenue_available_date"] == pd.Timestamp("2026-08-11")
     assert row["revenue_yoy"] == 32.5
     assert "0050" not in revenue["stock_id"].tolist()
 
@@ -123,14 +125,18 @@ def test_setup_pipeline():
     latest, context = scanner.add_market_context(latest, benchmark, latest_date)
     latest["revenue_yoy"] = 40.0
     latest["revenue_ytd_yoy"] = 20.0
+    latest["revenue_available_date"] = pd.Timestamp("2026-02-11")
+    latest["industry"] = ["半導體業", "半導體業", "水泥工業", "光電業"]
+    latest = scanner.add_industry_context(latest)
     setup = scanner.score_setup(latest)
-    assert context["benchmark_source"] == "TAIEX"
+    assert context["benchmark_source"] == "TWSE/TPEx 分流"
+    assert set(context["market_contexts"]) == {"TWSE", "TPEx"}
     assert context["market_regime"] in {"bull", "neutral", "bear"}
     assert 0 <= context["market_breadth_pct"] <= 100
     assert "setup_score" in setup.columns
     assert setup["revenue_yoy"].ge(scanner.MIN_REVENUE_YOY).all()
     assert setup["revenue_ytd_yoy"].ge(scanner.MIN_REVENUE_YTD_YOY).all()
-    assert setup["setup_score"].le(8).all()
+    assert setup["setup_score"].le(9).all()
 
 
 def test_industry_cap():
@@ -143,3 +149,37 @@ def test_industry_cap():
     selected = scanner.diversified_top(frame, 5)
     assert len(selected) == 5
     assert selected["industry"].value_counts().max() == 3
+
+
+def test_forward_signal_tracking(tmp_path, monkeypatch):
+    archive_dir = tmp_path / "archive"
+    data_dir = tmp_path / "data"
+    archive_dir.mkdir()
+    data_dir.mkdir()
+    payload = {
+        "meta": {"trade_date": "2026-09-01"},
+        "setup": [{
+            "market": "TWSE", "stock_id": "2330", "stock_name": "台積電",
+            "industry": "半導體業", "score": 8, "close": 100,
+            "entry_trigger": 102, "max_next_open": 103,
+            "cancel_below": 97, "initial_stop_reference": 96,
+            "reasons": ["產業相對強勢"],
+        }],
+    }
+    (archive_dir / "2026-09-01.json").write_text(
+        json.dumps(payload, ensure_ascii=False), encoding="utf-8"
+    )
+    prices = pd.DataFrame([
+        {"market": "TWSE", "stock_id": "2330", "trade_date": pd.Timestamp("2026-09-02"),
+         "open": 101, "high": 103, "low": 99, "close": 104},
+        {"market": "TWSE", "stock_id": "2330", "trade_date": pd.Timestamp("2026-09-03"),
+         "open": 104, "high": 106, "low": 103, "close": 105},
+    ])
+    monkeypatch.setattr(scanner, "ARCHIVE_DIR", archive_dir)
+    monkeypatch.setattr(scanner, "DATA_DIR", data_dir)
+    result = scanner.track_archived_signals(prices)
+    signal = result["signals"][0]
+    assert signal["status"] == "entered"
+    assert signal["entry_price"] == 102
+    assert signal["return_1d"] == 1.26
+    assert (data_dir / "performance.json").exists()

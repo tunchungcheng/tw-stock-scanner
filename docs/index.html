@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="台股動能蓄勢股票每日掃描結果">
   <title>台股動能雷達</title>
-  <link rel="stylesheet" href="styles.css?v=20260906-1">
+  <link rel="stylesheet" href="styles.css?v=20260906-2">
 </head>
 <body>
   <main class="shell">
@@ -38,12 +38,17 @@
         <strong id="setup-count">0</strong>
         <small>尚未突破 20 日高點</small>
       </article>
+      <article class="summary-card">
+        <span>10 日訊號追蹤</span>
+        <strong id="tracking-result">樣本累積中</strong>
+        <small id="tracking-detail">只追蹤網站實際發布過的訊號</small>
+      </article>
     </section>
 
     <details class="strategy-panel">
       <summary>
         <span>目前篩選條件</span>
-        <small>滿分 8 分 · 多頭 6 分／震盪 8 分／偏空停選</small>
+        <small>滿分 9 分 · 多頭 6 分／震盪 8 分／偏空停選</small>
       </summary>
       <div class="strategy-grid">
         <section>
@@ -51,6 +56,7 @@
           <ul class="rules compact">
             <li><span>20 日平均成交額至少 3,000 萬元</span></li>
             <li><span>月營收 YoY ≥ 30%，累計 YoY ≥ 15%</span></li>
+            <li><span>記錄營收保守可用日，供歷史驗證防止未來函數</span></li>
             <li><span>量比至少 1.0 倍</span></li>
             <li><span>尚未突破前 20 日最高價</span></li>
             <li><span>未觸發任一過熱排除條件</span></li>
@@ -64,9 +70,10 @@
             <li><strong>0～2</strong><span>動能：KD 加速且 K&lt;80、5 日漲幅、相對強勢</span></li>
             <li><strong>0～2</strong><span>量能：量比 1.2～2.5</span></li>
             <li><strong>0～2</strong><span>突破準備：10 日高點、波動回升、接近 20 日高點</span></li>
+            <li><strong>0～1</strong><span>產業：產業寬度 ≥ 55%，且 20 日報酬優於所屬市場</span></li>
             <li><strong>-1</strong><span>MA20 正乖離超過 6%</span></li>
           </ul>
-          <p>同組訊號不重複灌分；入選原因仍顯示實際成立項目。</p>
+          <p>上市與上櫃分開判斷行情；同組訊號不重複灌分。</p>
         </section>
         <section>
           <h2>排除過熱</h2>
@@ -81,7 +88,7 @@
       </div>
       <div class="risk-plan">
         <strong>交易與風控參考</strong>
-        <span>訊號次日開盤執行；若跳空超過前收 3% 則略過。初始停損參考 1.5 ATR，10 個交易日未突破則退出；實際執行仍需自行管理持倉。</span>
+        <span>次日開盤未超過追價上限、也未跌破取消價後，突破訊號日高點才觸發；初始停損 1.5 ATR，10 個交易日未突破則退出。網站追蹤已估入 0.7% 來回成本。</span>
       </div>
     </details>
 
@@ -113,6 +120,7 @@
               <th data-sort="rank">排名</th>
               <th data-sort="stock_id">股票</th>
               <th data-sort="industry">產業</th>
+              <th data-sort="market_regime">市場</th>
               <th data-sort="revenue_yoy">月營收 YoY</th>
               <th data-sort="score">分數</th>
               <th data-sort="close">收盤</th>
@@ -123,6 +131,7 @@
               <th data-sort="k">K / D</th>
               <th data-sort="ma20_deviation_pct">MA20 乖離</th>
               <th data-sort="distance_to_high20_pct">距高點</th>
+              <th>交易計畫</th>
               <th data-sort="reasons">入選原因</th>
             </tr>
           </thead>
@@ -140,6 +149,6 @@
       <span>價格未還原 · 下個交易日才可執行</span>
     </footer>
   </main>
-  <script src="app.js?v=20260906-1" defer></script>
+  <script src="app.js?v=20260906-2" defer></script>
 </body>
 </html>

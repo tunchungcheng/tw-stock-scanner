@@ -15,6 +15,7 @@ const reasonOptions = [
     "突破 10 日高點",
     "前日收斂、今日帶寬回升",
     "距 20 日高點不超過 5%",
+    "產業相對強勢",
     "MA20 乖離 6%～9%（-1）",
 ];
 
@@ -53,18 +54,25 @@ const stockInfoUrl = (row) => {
 function updateSummary() {
   const meta = state.data.meta || {};
   const regimeLabels = { bull: "多頭可操作", neutral: "震盪嚴選", bear: "偏空停選" };
+  const contexts = meta.market_contexts || {};
   setText("#trade-date", meta.trade_date || "—");
   setText("#generated-at", meta.generated_at
     ? `更新 ${new Date(meta.generated_at).toLocaleString("zh-TW")}`
     : meta.message || "等待資料");
-  setText("#market-state", regimeLabels[meta.market_regime] || "—");
-  setText("#market-return", meta.market_return_5d === undefined
-    ? "TAIEX 5 日報酬 —"
+  setText("#market-state", contexts.TWSE || contexts.TPEx
+    ? `上市 ${regimeLabels[contexts.TWSE?.market_regime] || "—"} · 上櫃 ${regimeLabels[contexts.TPEx?.market_regime] || "—"}`
+    : regimeLabels[meta.market_regime] || "—");
+  setText("#market-return", contexts.TWSE || contexts.TPEx
+    ? `上市寬度 ${number(contexts.TWSE?.market_breadth_pct, 0)}% · 上櫃 ${number(contexts.TPEx?.market_breadth_pct, 0)}%`
     : `市場寬度 ${number(meta.market_breadth_pct, 0)}% · 門檻 ${meta.required_score ?? "—"} 分`);
   setText("#setup-count", state.data.setup?.length || 0);
   setText("#data-note", meta.download_errors
     ? `本次有 ${meta.download_errors} 筆下載錯誤，請查看 workflow 紀錄。`
     : "收盤後訊號，僅供研究。");
+}
+
+function marketLabel(value) {
+  return ({ bull: "多頭", neutral: "震盪", bear: "偏空" })[value] || "—";
 }
 
 function visibleRows() {
@@ -112,6 +120,7 @@ function render() {
       <td class="rank">${row.rank}</td>
       <td><a class="stock-link" href="${stockInfoUrl(row)}" target="_blank" rel="noopener noreferrer"><span class="stock"><strong>${escapeHtml(row.stock_id)} ${escapeHtml(row.stock_name)}</strong><span>${escapeHtml(row.market)} · 查看股票資訊 ↗</span></span></a></td>
       <td class="industry">${escapeHtml(row.industry || "未分類")}</td>
+      <td><span class="market-badge ${escapeHtml(row.market_regime || "")}">${marketLabel(row.market_regime)}</span></td>
       <td class="${tone(row.revenue_yoy)}"><span class="revenue"><strong>${signed(row.revenue_yoy)}</strong><span>${escapeHtml(row.revenue_month || "月份未提供")} · 累計 ${signed(row.revenue_ytd_yoy)}</span></span></td>
       <td class="score">${row.score}</td>
       <td>${number(row.close)}</td>
@@ -122,10 +131,28 @@ function render() {
       <td>${number(row.k, 1)} / ${number(row.d, 1)}</td>
       <td class="${Number(row.ma20_deviation_pct) > 6 ? "warning" : ""}">${signed(row.ma20_deviation_pct)}</td>
       <td>${signed(row.distance_to_high20_pct)}</td>
+      <td class="trade-plan"><strong>突破 ${number(row.entry_trigger)}</strong><span>上限 ${number(row.max_next_open)} · 取消 ${number(row.cancel_below)} · 停損 ${number(row.initial_stop_reference)}</span></td>
       <td>${(row.reasons || []).map((reason) => `<span class="tag">${escapeHtml(reason)}</span>`).join("")}</td>
     </tr>
   `).join("");
   els.empty.hidden = rows.length > 0;
+}
+
+async function loadPerformance() {
+  try {
+    const response = await fetch("data/performance.json", { cache: "no-store" });
+    if (!response.ok) return;
+    const { summary = {} } = await response.json();
+    if (!summary.completed_10d) {
+      setText("#tracking-result", "樣本累積中");
+      setText("#tracking-detail", `已發布 ${summary.published_signals || 0} 筆 · 已進場 ${summary.entered_signals || 0} 筆`);
+      return;
+    }
+    setText("#tracking-result", `${signed(summary.average_return_10d)} · 勝率 ${number(summary.win_rate_10d, 0)}%`);
+    setText("#tracking-detail", `${summary.completed_10d} 筆完整樣本 · 已估 ${number(summary.estimated_cost_pct, 1)}% 成本`);
+  } catch (_) {
+    // 績效追蹤不影響最新名單。
+  }
 }
 
 async function loadData(path = "data/latest.json") {
@@ -194,3 +221,4 @@ document.querySelectorAll("th[data-sort]").forEach((header) => {
 updateReasonOptions();
 loadDates();
 loadData();
+loadPerformance();

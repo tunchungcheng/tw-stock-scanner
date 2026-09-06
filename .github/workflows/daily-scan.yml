@@ -34,6 +34,9 @@ jobs:
       - name: 安裝套件
         run: python -m pip install -r requirements.txt
 
+      - name: 執行測試
+        run: python -m pytest -q
+
       - name: 執行台股掃描
         run: python scanner.py
 

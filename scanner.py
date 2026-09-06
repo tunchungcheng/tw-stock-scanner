@@ -30,6 +30,7 @@ REQUEST_INTERVAL_SECONDS = 0.25
 MIN_AVG_TURNOVER_20 = 30_000_000
 MIN_REVENUE_YOY = 30.0
 MIN_REVENUE_YTD_YOY = 15.0
+REVENUE_AVAILABLE_DAY = 11
 MIN_VOLUME_RATIO = 1.0
 MAX_MA20_DEVIATION_PCT = 9.0
 SOFT_MA20_DEVIATION_PCT = 6.0
@@ -38,6 +39,9 @@ SETUP_MIN_SCORE = 6
 NEUTRAL_SETUP_MIN_SCORE = 8
 SETUP_LIMIT = 20
 MAX_STOCKS_PER_INDUSTRY = 3
+INDUSTRY_BREADTH_THRESHOLD = 55.0
+SIGNAL_TRACKING_DAYS = (1, 3, 5, 10, 20)
+ESTIMATED_ROUND_TRIP_COST_PCT = 0.7
 
 INDUSTRY_NAMES = {
     "01": "水泥工業",
@@ -193,6 +197,16 @@ def normalize_revenue_month(value: object) -> str:
     return f"{year:04d}-{month:02d}" if 1 <= month <= 12 else ""
 
 
+def conservative_revenue_available_date(revenue_month: object) -> pd.Timestamp:
+    """以次月 11 日作為營收可用日，避免誤用尚未公開的資料。"""
+    try:
+        month = pd.Period(str(revenue_month), freq="M")
+    except (TypeError, ValueError):
+        return pd.NaT
+    next_month = month + 1
+    return pd.Timestamp(next_month.start_time.date().replace(day=REVENUE_AVAILABLE_DAY))
+
+
 def normalize_monthly_revenue(
     twse_payload: object, tpex_payload: object
 ) -> pd.DataFrame:
@@ -218,9 +232,13 @@ def normalize_monthly_revenue(
                 }
             )
     columns = ["market", "stock_id", "revenue_month", "revenue_yoy", "revenue_ytd_yoy"]
-    return pd.DataFrame(records, columns=columns).drop_duplicates(
+    frame = pd.DataFrame(records, columns=columns).drop_duplicates(
         ["market", "stock_id"], keep="last"
     )
+    frame["revenue_available_date"] = frame["revenue_month"].map(
+        conservative_revenue_available_date
+    )
+    return frame
 
 
 def collect_monthly_revenue() -> pd.DataFrame:
@@ -504,54 +522,100 @@ def add_market_context(
     latest: pd.DataFrame, benchmark: pd.DataFrame, latest_date: pd.Timestamp
 ) -> tuple[pd.DataFrame, dict[str, object]]:
     benchmark = benchmark[benchmark["trade_date"] <= latest_date].sort_values("trade_date").copy()
-    breadth_above_ma20 = float((latest["close"] > latest["MA20"]).mean() * 100)
+    latest = latest.copy()
+    market_contexts: dict[str, dict[str, object]] = {}
     if len(benchmark) >= 60:
         benchmark["return_5d"] = benchmark["close"].pct_change(5, fill_method=None) * 100
         benchmark["return_20d"] = benchmark["close"].pct_change(20, fill_method=None) * 100
         benchmark["MA20"] = benchmark["close"].rolling(20, min_periods=20).mean()
         benchmark["MA60"] = benchmark["close"].rolling(60, min_periods=60).mean()
         last = benchmark.iloc[-1]
-        market_return_5d = float(last["return_5d"])
-        market_return_20d = float(last["return_20d"])
-        market_above_ma60 = bool(last["close"] > last["MA60"])
-        market_ma20_rising = bool(last["MA20"] > benchmark["MA20"].iloc[-6])
-        source = "TAIEX"
+        twse_benchmark: dict[str, object] | None = {
+            "return_5d": float(last["return_5d"]),
+            "return_20d": float(last["return_20d"]),
+            "above_ma60": bool(last["close"] > last["MA60"]),
+            "ma20_rising": bool(last["MA20"] > benchmark["MA20"].iloc[-6]),
+            "source": "TAIEX",
+        }
     else:
-        market_return_5d = float(latest["return_5d"].median())
-        market_return_20d = float(latest["return_20d"].median())
-        market_above_ma60 = bool(latest["return_60d"].median() > 0)
-        market_ma20_rising = bool((latest["MA20"] > latest["MA20_prev5"]).mean() >= 0.5)
-        source = "全市場中位數"
+        twse_benchmark = None
 
-    if market_above_ma60 and market_ma20_rising and breadth_above_ma20 >= 55:
-        market_regime = "bull"
-        required_score = SETUP_MIN_SCORE
-    elif market_above_ma60 or breadth_above_ma20 >= 40:
-        market_regime = "neutral"
-        required_score = NEUTRAL_SETUP_MIN_SCORE
-    else:
-        market_regime = "bear"
-        required_score = NEUTRAL_SETUP_MIN_SCORE
+    for market, market_rows in latest.groupby("market"):
+        breadth = float((market_rows["close"] > market_rows["MA20"]).mean() * 100)
+        if market == "TWSE" and twse_benchmark:
+            values = twse_benchmark
+        else:
+            values = {
+                "return_5d": float(market_rows["return_5d"].median()),
+                "return_20d": float(market_rows["return_20d"].median()),
+                "above_ma60": bool(market_rows["return_60d"].median() > 0),
+                "ma20_rising": bool(
+                    (market_rows["MA20"] > market_rows["MA20_prev5"]).mean() >= 0.5
+                ),
+                "source": f"{market}市場中位數",
+            }
+        if values["above_ma60"] and values["ma20_rising"] and breadth >= 55:
+            regime, required_score = "bull", SETUP_MIN_SCORE
+        elif values["above_ma60"] or breadth >= 40:
+            regime, required_score = "neutral", NEUTRAL_SETUP_MIN_SCORE
+        else:
+            regime, required_score = "bear", NEUTRAL_SETUP_MIN_SCORE
 
-    latest = latest.copy()
-    latest["relative_return_5d"] = latest["return_5d"] - market_return_5d
-    latest["relative_return_20d"] = latest["return_20d"] - market_return_20d
-    latest["market_above_ma60"] = market_above_ma60
-    latest["market_ma20_rising"] = market_ma20_rising
-    latest["market_breadth_pct"] = breadth_above_ma20
-    latest["market_regime"] = market_regime
-    latest["required_score"] = required_score
+        market_contexts[market] = {
+            "benchmark_source": values["source"],
+            "market_return_5d": values["return_5d"],
+            "market_return_20d": values["return_20d"],
+            "market_above_ma60": values["above_ma60"],
+            "market_ma20_rising": values["ma20_rising"],
+            "market_breadth_pct": breadth,
+            "market_regime": regime,
+            "required_score": required_score,
+        }
+        mask = latest["market"].eq(market)
+        latest.loc[mask, "relative_return_5d"] = latest.loc[mask, "return_5d"] - float(values["return_5d"])
+        latest.loc[mask, "relative_return_20d"] = latest.loc[mask, "return_20d"] - float(values["return_20d"])
+        latest.loc[mask, "market_above_ma60"] = bool(values["above_ma60"])
+        latest.loc[mask, "market_ma20_rising"] = bool(values["ma20_rising"])
+        latest.loc[mask, "market_breadth_pct"] = breadth
+        latest.loc[mask, "market_regime"] = regime
+        latest.loc[mask, "required_score"] = required_score
+
+    regime_order = {"bear": 0, "neutral": 1, "bull": 2}
+    conservative = min(
+        market_contexts.values(), key=lambda item: regime_order[str(item["market_regime"])]
+    )
+    breadth_above_ma20 = float((latest["close"] > latest["MA20"]).mean() * 100)
     context = {
-        "benchmark_source": source,
-        "market_return_5d": market_return_5d,
-        "market_return_20d": market_return_20d,
-        "market_above_ma60": market_above_ma60,
-        "market_ma20_rising": market_ma20_rising,
+        "benchmark_source": "TWSE/TPEx 分流",
+        "market_return_5d": float(latest["return_5d"].median()),
+        "market_return_20d": float(latest["return_20d"].median()),
+        "market_above_ma60": bool(conservative["market_above_ma60"]),
+        "market_ma20_rising": bool(conservative["market_ma20_rising"]),
         "market_breadth_pct": breadth_above_ma20,
-        "market_regime": market_regime,
-        "required_score": required_score,
+        "market_regime": conservative["market_regime"],
+        "required_score": int(conservative["required_score"]),
+        "market_contexts": market_contexts,
     }
     return latest, context
+
+
+def add_industry_context(latest: pd.DataFrame) -> pd.DataFrame:
+    latest = latest.copy()
+    keys = ["market", "industry"]
+    for _, indices in latest.groupby(keys, sort=False).groups.items():
+        rows = latest.loc[indices]
+        latest.loc[indices, "industry_breadth_pct"] = float(
+            (rows["close"] > rows["MA20"]).mean() * 100
+        )
+        latest.loc[indices, "industry_return_20d"] = float(rows["return_20d"].median())
+    latest["industry_relative_20d"] = latest["industry_return_20d"] - latest.groupby(
+        "market"
+    )["return_20d"].transform("median")
+    latest["industry_strong"] = (
+        latest["industry_breadth_pct"].ge(INDUSTRY_BREADTH_THRESHOLD)
+        & latest["industry_relative_20d"].gt(0)
+    )
+    return latest
 
 
 def score_setup(latest: pd.DataFrame) -> pd.DataFrame:
@@ -585,6 +649,7 @@ def score_setup(latest: pd.DataFrame) -> pd.DataFrame:
         .sum(axis=1)
         .clip(upper=2)
     )
+    latest["industry_score"] = latest["industry_strong"].astype(int)
     latest["deviation_penalty"] = (
         latest["ma20_deviation_pct"] > SOFT_MA20_DEVIATION_PCT
     ).astype(int)
@@ -600,6 +665,7 @@ def score_setup(latest: pd.DataFrame) -> pd.DataFrame:
         + latest["momentum_score"]
         + latest["volume_score"]
         + latest["breakout_score"]
+        + latest["industry_score"]
         - latest["deviation_penalty"]
     )
 
@@ -637,6 +703,7 @@ def reason_labels(row: pd.Series) -> list[str]:
         ("early_breakout", "突破 10 日高點"),
         ("volatility_release", "前日收斂、今日帶寬回升"),
         ("near_breakout_zone", "距 20 日高點不超過 5%"),
+        ("industry_strong", "產業相對強勢"),
     ]
     labels = [label for field, label in mapping if bool(row.get(field, False))]
     if int(row.get("deviation_penalty", 0)):
@@ -676,12 +743,17 @@ def records_for_web(frame: pd.DataFrame, limit: int) -> list[dict[str, object]]:
                 "stock_id": row["stock_id"],
                 "stock_name": row["stock_name"],
                 "industry": row.get("industry", "未分類"),
+                "industry_breadth_pct": finite(row.get("industry_breadth_pct")),
+                "industry_relative_20d": finite(row.get("industry_relative_20d")),
                 "revenue_month": row.get("revenue_month", ""),
+                "revenue_available_date": str(row.get("revenue_available_date", ""))[:10],
                 "revenue_yoy": finite(row.get("revenue_yoy")),
                 "revenue_ytd_yoy": finite(row.get("revenue_ytd_yoy")),
                 "close": finite(row["close"]),
                 "pct_change": finite(row["pct_change"]),
                 "score": int(row["setup_score"]),
+                "market_regime": row.get("market_regime", ""),
+                "required_score": int(row.get("required_score", 0)),
                 "k": finite(row["K"], 1),
                 "d": finite(row["D"], 1),
                 "volume_ratio": finite(row["volume_ratio"]),
@@ -694,10 +766,115 @@ def records_for_web(frame: pd.DataFrame, limit: int) -> list[dict[str, object]]:
                 "ma20_deviation_atr": finite(row["ma20_deviation_atr"]),
                 "initial_stop_reference": finite(row["close"] - row["ATR14"] * 1.5),
                 "max_next_open": finite(row["close"] * 1.03),
+                "entry_trigger": finite(row["high"]),
+                "cancel_below": finite(max(row["MA10"], row["close"] - row["ATR14"] * 1.5)),
                 "reasons": reason_labels(row),
             }
         )
     return records
+
+
+def track_archived_signals(prices: pd.DataFrame) -> dict[str, object]:
+    """用實際後續行情追蹤已發布訊號；不回填未曾發布的歷史候選。"""
+    tracked: list[dict[str, object]] = []
+    grouped_prices = {
+        key: rows.sort_values("trade_date")
+        for key, rows in prices.groupby(["market", "stock_id"])
+    }
+    for path in sorted(ARCHIVE_DIR.glob("*.json")):
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        signal_date = pd.Timestamp(payload.get("meta", {}).get("trade_date"))
+        for signal in payload.get("setup", []):
+            key = (signal.get("market"), signal.get("stock_id"))
+            history = grouped_prices.get(key)
+            if history is None:
+                continue
+            future = history[history["trade_date"] > signal_date].reset_index(drop=True)
+            record: dict[str, object] = {
+                "signal_date": signal_date.strftime("%Y-%m-%d"),
+                "market": key[0],
+                "stock_id": key[1],
+                "stock_name": signal.get("stock_name", ""),
+                "industry": signal.get("industry", "未分類"),
+                "score": signal.get("score"),
+                "reasons": signal.get("reasons", []),
+                "status": "pending",
+            }
+            if future.empty:
+                tracked.append(record)
+                continue
+
+            day = future.iloc[0]
+            trigger = float(signal.get("entry_trigger") or signal.get("close") or day["open"])
+            max_entry = float(signal.get("max_next_open") or trigger * 1.03)
+            stop = float(signal.get("initial_stop_reference") or 0)
+            cancel_below = float(signal.get("cancel_below") or stop)
+            open_price = float(day["open"])
+            if open_price > max_entry:
+                record["status"] = "skipped_gap"
+            elif open_price < cancel_below:
+                record["status"] = "skipped_weak_open"
+            elif float(day["high"]) < trigger:
+                record["status"] = "skipped_no_trigger"
+            else:
+                entry = max(open_price, trigger)
+                if entry > max_entry:
+                    record["status"] = "skipped_above_limit"
+                else:
+                    record.update(
+                        {
+                            "status": "entered",
+                            "entry_date": pd.Timestamp(day["trade_date"]).strftime("%Y-%m-%d"),
+                            "entry_price": finite(entry),
+                            "stop_price": finite(stop),
+                        }
+                    )
+                    for holding_days in SIGNAL_TRACKING_DAYS:
+                        if len(future) >= holding_days:
+                            exit_close = float(future.iloc[holding_days - 1]["close"])
+                            gross = (exit_close / entry - 1) * 100
+                            record[f"return_{holding_days}d"] = finite(
+                                gross - ESTIMATED_ROUND_TRIP_COST_PCT
+                            )
+                    first_ten = future.iloc[:10]
+                    if stop > 0 and bool((first_ten["low"] <= stop).any()):
+                        stop_day = first_ten[first_ten["low"] <= stop].iloc[0]
+                        stop_fill = min(float(stop_day["open"]), stop)
+                        record["stop_hit_10d"] = True
+                        record["stop_return_pct"] = finite(
+                            (stop_fill / entry - 1) * 100 - ESTIMATED_ROUND_TRIP_COST_PCT
+                        )
+                    else:
+                        record["stop_hit_10d"] = False
+            tracked.append(record)
+
+    completed_10d = [
+        row for row in tracked if row.get("status") == "entered" and row.get("return_10d") is not None
+    ]
+    returns_10d = [float(row["return_10d"]) for row in completed_10d]
+    summary = {
+        "published_signals": len(tracked),
+        "entered_signals": sum(row.get("status") == "entered" for row in tracked),
+        "completed_10d": len(completed_10d),
+        "win_rate_10d": finite(
+            sum(value > 0 for value in returns_10d) / len(returns_10d) * 100
+        ) if returns_10d else None,
+        "average_return_10d": finite(np.mean(returns_10d)) if returns_10d else None,
+        "estimated_cost_pct": ESTIMATED_ROUND_TRIP_COST_PCT,
+    }
+    result = {"summary": summary, "signals": tracked}
+    (DATA_DIR / "performance.json").write_text(
+        json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
+    if tracked:
+        flat_records = [dict(row, reasons="｜".join(row.get("reasons", []))) for row in tracked]
+        pd.DataFrame(flat_records).to_csv(
+            DATA_DIR / "signal_performance.csv", index=False, encoding="utf-8-sig"
+        )
+    return result
 
 
 def write_results(
@@ -726,6 +903,7 @@ def write_results(
             "eligible_count": len(setup),
             "universe_count": universe_count,
             "download_errors": len(errors),
+            "market_contexts": context["market_contexts"],
         },
         "setup": records_for_web(setup, SETUP_LIMIT),
     }
@@ -764,10 +942,13 @@ def main() -> None:
     latest["industry"] = latest["industry"].fillna("未分類")
     latest["industry_code"] = latest["industry_code"].fillna("")
     latest, context = add_market_context(latest, benchmark, latest_date)
+    latest = add_industry_context(latest)
     setup = score_setup(latest)
     write_results(latest_date, setup, context, len(latest), errors)
+    performance = track_archived_signals(prices)
     print(
         f"完成 {latest_date.date()}：蓄勢 {min(len(setup), SETUP_LIMIT)} 檔，"
+        f"已完成 10 日追蹤 {performance['summary']['completed_10d']} 筆，"
         f"下載錯誤 {len(errors)} 筆"
     )
 

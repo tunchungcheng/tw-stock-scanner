@@ -122,7 +122,24 @@ def test_setup_pipeline():
     )
     latest, context = scanner.add_market_context(latest, benchmark, latest_date)
     latest["revenue_yoy"] = 40.0
+    latest["revenue_ytd_yoy"] = 20.0
     setup = scanner.score_setup(latest)
     assert context["benchmark_source"] == "TAIEX"
+    assert context["market_regime"] in {"bull", "neutral", "bear"}
+    assert 0 <= context["market_breadth_pct"] <= 100
     assert "setup_score" in setup.columns
     assert setup["revenue_yoy"].ge(scanner.MIN_REVENUE_YOY).all()
+    assert setup["revenue_ytd_yoy"].ge(scanner.MIN_REVENUE_YTD_YOY).all()
+    assert setup["setup_score"].le(8).all()
+
+
+def test_industry_cap():
+    frame = pd.DataFrame(
+        {
+            "industry": ["半導體業"] * 5 + ["航運業"] * 2,
+            "setup_score": [8, 7, 6, 5, 4, 3, 2],
+        }
+    )
+    selected = scanner.diversified_top(frame, 5)
+    assert len(selected) == 5
+    assert selected["industry"].value_counts().max() == 3

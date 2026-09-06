@@ -29,8 +29,15 @@ BACKFILL_CALENDAR_DAYS = 150
 REQUEST_INTERVAL_SECONDS = 0.25
 MIN_AVG_TURNOVER_20 = 30_000_000
 MIN_REVENUE_YOY = 30.0
+MIN_REVENUE_YTD_YOY = 15.0
+MIN_VOLUME_RATIO = 1.0
+MAX_MA20_DEVIATION_PCT = 9.0
+SOFT_MA20_DEVIATION_PCT = 6.0
+MAX_K_FOR_MOMENTUM = 80.0
 SETUP_MIN_SCORE = 6
+NEUTRAL_SETUP_MIN_SCORE = 8
 SETUP_LIMIT = 20
+MAX_STOCKS_PER_INDUSTRY = 3
 
 INDUSTRY_NAMES = {
     "01": "水泥工業",
@@ -435,7 +442,9 @@ def calculate_indicators(price_df: pd.DataFrame) -> pd.DataFrame:
     grouped = df.groupby(keys, group_keys=False)
     df["ATR14"] = grouped["TR"].transform(lambda s: s.rolling(14, min_periods=14).mean())
     df["MA5"] = grouped["close"].transform(lambda s: s.rolling(5, min_periods=5).mean())
+    df["MA10"] = grouped["close"].transform(lambda s: s.rolling(10, min_periods=10).mean())
     df["MA20"] = grouped["close"].transform(lambda s: s.rolling(20, min_periods=20).mean())
+    df["MA20_prev5"] = grouped["MA20"].shift(5)
     df["STD20"] = grouped["close"].transform(lambda s: s.rolling(20, min_periods=20).std())
     df["BB_WIDTH"] = 4 * df["STD20"] / df["MA20"].replace(0, np.nan)
     df["ATR_PCT"] = df["ATR14"] / df["close"].replace(0, np.nan)
@@ -467,6 +476,8 @@ def calculate_indicators(price_df: pd.DataFrame) -> pd.DataFrame:
     df["distance_to_high20_pct"] = (
         (df["HIGH20_PREV"] - df["close"]) / df["HIGH20_PREV"] * 100
     )
+    df["ma20_deviation_pct"] = (df["close"] / df["MA20"] - 1) * 100
+    df["ma20_deviation_atr"] = (df["close"] - df["MA20"]) / df["ATR14"].replace(0, np.nan)
     df["golden_cross"] = (df["K_prev"] <= df["D_prev"]) & (df["K"] > df["D"])
     df["breakout_20d"] = df["close"] >= df["HIGH20_PREV"]
     df["volatility_compression"] = (df["ATR_PCT"] <= df["ATR_Q30_60"]) | (
@@ -493,30 +504,52 @@ def add_market_context(
     latest: pd.DataFrame, benchmark: pd.DataFrame, latest_date: pd.Timestamp
 ) -> tuple[pd.DataFrame, dict[str, object]]:
     benchmark = benchmark[benchmark["trade_date"] <= latest_date].sort_values("trade_date").copy()
+    breadth_above_ma20 = float((latest["close"] > latest["MA20"]).mean() * 100)
     if len(benchmark) >= 60:
         benchmark["return_5d"] = benchmark["close"].pct_change(5, fill_method=None) * 100
         benchmark["return_20d"] = benchmark["close"].pct_change(20, fill_method=None) * 100
+        benchmark["MA20"] = benchmark["close"].rolling(20, min_periods=20).mean()
         benchmark["MA60"] = benchmark["close"].rolling(60, min_periods=60).mean()
         last = benchmark.iloc[-1]
         market_return_5d = float(last["return_5d"])
         market_return_20d = float(last["return_20d"])
         market_above_ma60 = bool(last["close"] > last["MA60"])
+        market_ma20_rising = bool(last["MA20"] > benchmark["MA20"].iloc[-6])
         source = "TAIEX"
     else:
         market_return_5d = float(latest["return_5d"].median())
         market_return_20d = float(latest["return_20d"].median())
         market_above_ma60 = bool(latest["return_60d"].median() > 0)
+        market_ma20_rising = bool((latest["MA20"] > latest["MA20_prev5"]).mean() >= 0.5)
         source = "全市場中位數"
+
+    if market_above_ma60 and market_ma20_rising and breadth_above_ma20 >= 55:
+        market_regime = "bull"
+        required_score = SETUP_MIN_SCORE
+    elif market_above_ma60 or breadth_above_ma20 >= 40:
+        market_regime = "neutral"
+        required_score = NEUTRAL_SETUP_MIN_SCORE
+    else:
+        market_regime = "bear"
+        required_score = NEUTRAL_SETUP_MIN_SCORE
 
     latest = latest.copy()
     latest["relative_return_5d"] = latest["return_5d"] - market_return_5d
     latest["relative_return_20d"] = latest["return_20d"] - market_return_20d
     latest["market_above_ma60"] = market_above_ma60
+    latest["market_ma20_rising"] = market_ma20_rising
+    latest["market_breadth_pct"] = breadth_above_ma20
+    latest["market_regime"] = market_regime
+    latest["required_score"] = required_score
     context = {
         "benchmark_source": source,
         "market_return_5d": market_return_5d,
         "market_return_20d": market_return_20d,
         "market_above_ma60": market_above_ma60,
+        "market_ma20_rising": market_ma20_rising,
+        "market_breadth_pct": breadth_above_ma20,
+        "market_regime": market_regime,
+        "required_score": required_score,
     }
     return latest, context
 
@@ -528,44 +561,63 @@ def score_setup(latest: pd.DataFrame) -> pd.DataFrame:
         (latest["K"] > latest["K_prev"])
         & (latest["K_prev"] > latest["K_prev2"])
         & (latest["K"] > latest["D"])
+        & (latest["K"] < MAX_K_FOR_MOMENTUM)
     )
     latest["return_5d_momentum"] = latest["return_5d"].between(1, 8)
     latest["relative_strength_5d"] = latest["relative_return_5d"] > 0
-    latest["volume_momentum"] = latest["volume_ratio"].between(1.0, 2.5)
+    latest["volume_momentum"] = latest["volume_ratio"].between(1.2, 2.5)
     latest["early_breakout"] = (
         (latest["close"] >= latest["HIGH10_PREV"])
         & (latest["close"] < latest["HIGH20_PREV"])
     )
     latest["near_breakout_zone"] = latest["distance_to_high20_pct"].between(0, 5)
+    latest["trend_score"] = latest["trend_turn"].astype(int) * 2
+    latest["momentum_score"] = (
+        latest[["kd_acceleration", "return_5d_momentum", "relative_strength_5d"]]
+        .astype(int)
+        .sum(axis=1)
+        .clip(upper=2)
+    )
+    latest["volume_score"] = latest["volume_momentum"].astype(int) * 2
+    latest["breakout_score"] = (
+        latest[["early_breakout", "volatility_release", "near_breakout_zone"]]
+        .astype(int)
+        .sum(axis=1)
+        .clip(upper=2)
+    )
+    latest["deviation_penalty"] = (
+        latest["ma20_deviation_pct"] > SOFT_MA20_DEVIATION_PCT
+    ).astype(int)
     latest["excluded_as_extended"] = (
         (latest["return_5d"] > 10)
         | (latest["return_20d"] > 20)
-        | (latest["close"] > latest["MA20"] * 1.12)
+        | (latest["ma20_deviation_pct"] > MAX_MA20_DEVIATION_PCT)
+        | ((latest["K"] >= MAX_K_FOR_MOMENTUM) & (latest["ma20_deviation_pct"] > 6))
         | (latest["volume_ratio"] > 4)
     )
     latest["setup_score"] = (
-        latest["trend_turn"].astype(int) * 2
-        + latest["kd_acceleration"].astype(int) * 2
-        + latest["return_5d_momentum"].astype(int) * 2
-        + latest["relative_strength_5d"].astype(int) * 2
-        + latest["volume_momentum"].astype(int) * 2
-        + latest["early_breakout"].astype(int) * 2
-        + latest["volatility_release"].astype(int)
-        + latest["near_breakout_zone"].astype(int)
+        latest["trend_score"]
+        + latest["momentum_score"]
+        + latest["volume_score"]
+        + latest["breakout_score"]
+        - latest["deviation_penalty"]
     )
 
     valid = (
         latest["liquid"]
         & latest["return_20d"].notna()
         & latest["volume_ratio"].notna()
+        & latest["volume_ratio"].ge(MIN_VOLUME_RATIO)
         & latest["MA20"].notna()
         & latest["revenue_yoy"].ge(MIN_REVENUE_YOY)
+        & latest["revenue_ytd_yoy"].ge(MIN_REVENUE_YTD_YOY)
     )
     setup_mask = (
         valid
+        & latest["market_regime"].ne("bear")
         & ~latest["breakout_20d"]
         & ~latest["excluded_as_extended"]
-        & (latest["setup_score"] >= SETUP_MIN_SCORE)
+        & (latest["setup_score"] >= latest["required_score"])
     )
 
     setup = latest.loc[setup_mask].sort_values(
@@ -577,16 +629,33 @@ def score_setup(latest: pd.DataFrame) -> pd.DataFrame:
 
 def reason_labels(row: pd.Series) -> list[str]:
     mapping = [
-        ("trend_turn", "收盤 > MA5 > MA20"),
-        ("kd_acceleration", "KD 動能加速"),
+        ("trend_turn", "多頭均線排列"),
+        ("kd_acceleration", "KD 加速且 K < 80"),
         ("return_5d_momentum", "5 日漲幅 1%～8%"),
         ("relative_strength_5d", "5 日相對強勢"),
-        ("volume_momentum", "量比 1.0～2.5"),
+        ("volume_momentum", "量比 1.2～2.5"),
         ("early_breakout", "突破 10 日高點"),
         ("volatility_release", "前日收斂、今日帶寬回升"),
         ("near_breakout_zone", "距 20 日高點不超過 5%"),
     ]
-    return [label for field, label in mapping if bool(row.get(field, False))]
+    labels = [label for field, label in mapping if bool(row.get(field, False))]
+    if int(row.get("deviation_penalty", 0)):
+        labels.append("MA20 乖離 6%～9%（-1）")
+    return labels
+
+
+def diversified_top(frame: pd.DataFrame, limit: int) -> pd.DataFrame:
+    selected: list[object] = []
+    industry_counts: dict[str, int] = {}
+    for index, row in frame.iterrows():
+        industry = str(row.get("industry") or "未分類")
+        if industry_counts.get(industry, 0) >= MAX_STOCKS_PER_INDUSTRY:
+            continue
+        selected.append(index)
+        industry_counts[industry] = industry_counts.get(industry, 0) + 1
+        if len(selected) >= limit:
+            break
+    return frame.loc[selected]
 
 
 def finite(value: object, digits: int = 2) -> float | None:
@@ -599,7 +668,7 @@ def finite(value: object, digits: int = 2) -> float | None:
 
 def records_for_web(frame: pd.DataFrame, limit: int) -> list[dict[str, object]]:
     records = []
-    for rank, (_, row) in enumerate(frame.head(limit).iterrows(), 1):
+    for rank, (_, row) in enumerate(diversified_top(frame, limit).iterrows(), 1):
         records.append(
             {
                 "rank": rank,
@@ -609,6 +678,7 @@ def records_for_web(frame: pd.DataFrame, limit: int) -> list[dict[str, object]]:
                 "industry": row.get("industry", "未分類"),
                 "revenue_month": row.get("revenue_month", ""),
                 "revenue_yoy": finite(row.get("revenue_yoy")),
+                "revenue_ytd_yoy": finite(row.get("revenue_ytd_yoy")),
                 "close": finite(row["close"]),
                 "pct_change": finite(row["pct_change"]),
                 "score": int(row["setup_score"]),
@@ -620,6 +690,10 @@ def records_for_web(frame: pd.DataFrame, limit: int) -> list[dict[str, object]]:
                 "return_20d": finite(row["return_20d"]),
                 "relative_return_5d": finite(row["relative_return_5d"]),
                 "distance_to_high20_pct": finite(row["distance_to_high20_pct"]),
+                "ma20_deviation_pct": finite(row["ma20_deviation_pct"]),
+                "ma20_deviation_atr": finite(row["ma20_deviation_atr"]),
+                "initial_stop_reference": finite(row["close"] - row["ATR14"] * 1.5),
+                "max_next_open": finite(row["close"] * 1.03),
                 "reasons": reason_labels(row),
             }
         )
@@ -645,6 +719,11 @@ def write_results(
             "market_return_5d": finite(context["market_return_5d"]),
             "market_return_20d": finite(context["market_return_20d"]),
             "market_above_ma60": bool(context["market_above_ma60"]),
+            "market_ma20_rising": bool(context["market_ma20_rising"]),
+            "market_breadth_pct": finite(context["market_breadth_pct"]),
+            "market_regime": context["market_regime"],
+            "required_score": int(context["required_score"]),
+            "eligible_count": len(setup),
             "universe_count": universe_count,
             "download_errors": len(errors),
         },

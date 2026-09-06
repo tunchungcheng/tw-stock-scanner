@@ -4,7 +4,7 @@
 
 ## 結果
 
-- **蓄勢名單**：最新月營收 YoY 至少 30%，搭配均線轉多、KD 加速、5 日相對強勢、溫和放量與突破 10 日高點。
+- **蓄勢名單**：月營收 YoY 至少 30%、累計 YoY 至少 15%，搭配市場狀態、分組動能計分、必要量能與乖離控制。
 - 網頁顯示產業別，股票名稱可直接開啟個股資訊頁，並支援代號／名稱／產業搜尋、欄位排序、依入選原因優先排序、CSV 下載與歷史交易日切換。
 
 ## 啟用方式
@@ -33,7 +33,11 @@ python -m http.server 8000 --directory docs
 - `BACKFILL_CALENDAR_DAYS`：每次重新抓取的歷史日數。
 - `MIN_AVG_TURNOVER_20`：20 日平均成交額下限。
 - `MIN_REVENUE_YOY`：最新月營收年增率下限。
+- `MIN_REVENUE_YTD_YOY`：累計營收年增率下限。
+- `MIN_VOLUME_RATIO`：當日量比必要門檻。
+- `MAX_MA20_DEVIATION_PCT`：MA20 正乖離排除上限。
 - `SETUP_MIN_SCORE`：蓄勢名單最低分數。
+- `NEUTRAL_SETUP_MIN_SCORE`：震盪行情最低分數。
 - `SETUP_LIMIT`：網頁顯示筆數。
 
 ## 資料與限制

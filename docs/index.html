@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="台股動能蓄勢股票每日掃描結果">
   <title>台股動能雷達</title>
-  <link rel="stylesheet" href="styles.css?v=20260905-2">
+  <link rel="stylesheet" href="styles.css?v=20260906-1">
 </head>
 <body>
   <main class="shell">
@@ -43,42 +43,45 @@
     <details class="strategy-panel">
       <summary>
         <span>目前篩選條件</span>
-        <small>滿分 14 分 · 入選門檻 6 分</small>
+        <small>滿分 8 分 · 多頭 6 分／震盪 8 分／偏空停選</small>
       </summary>
       <div class="strategy-grid">
         <section>
           <h2>必要門檻</h2>
           <ul class="rules compact">
             <li><span>20 日平均成交額至少 3,000 萬元</span></li>
-            <li><span>最新月營收 YoY 至少 30%</span></li>
+            <li><span>月營收 YoY ≥ 30%，累計 YoY ≥ 15%</span></li>
+            <li><span>量比至少 1.0 倍</span></li>
             <li><span>尚未突破前 20 日最高價</span></li>
             <li><span>未觸發任一過熱排除條件</span></li>
-            <li><span>加總分數至少 6 分，取前 20 名</span></li>
+            <li><span>每產業最多 3 檔，取前 20 名</span></li>
           </ul>
         </section>
         <section class="scoring-rules">
-          <h2>加分條件</h2>
+          <h2>分組計分</h2>
           <ul class="rules">
-            <li><strong>+2</strong><span>收盤 &gt; MA5 &gt; MA20</span></li>
-            <li><strong>+2</strong><span>K 連續兩日上升且 K &gt; D</span></li>
-            <li><strong>+2</strong><span>5 日漲幅 1%～8%</span></li>
-            <li><strong>+2</strong><span>5 日報酬優於大盤</span></li>
-            <li><strong>+2</strong><span>今日量比 1.0～2.5</span></li>
-            <li><strong>+2</strong><span>突破 10 日高點、未突破 20 日高點</span></li>
-            <li><strong>+1</strong><span>前一日波動收斂，今日布林帶寬回升</span></li>
-            <li><strong>+1</strong><span>距 20 日高點不超過 5%</span></li>
+            <li><strong>0～2</strong><span>趨勢：收盤 &gt; MA5 &gt; MA20</span></li>
+            <li><strong>0～2</strong><span>動能：KD 加速且 K&lt;80、5 日漲幅、相對強勢</span></li>
+            <li><strong>0～2</strong><span>量能：量比 1.2～2.5</span></li>
+            <li><strong>0～2</strong><span>突破準備：10 日高點、波動回升、接近 20 日高點</span></li>
+            <li><strong>-1</strong><span>MA20 正乖離超過 6%</span></li>
           </ul>
-          <p>這是加分制，不要求八項全部成立；入選原因會顯示實際得分項目。</p>
+          <p>同組訊號不重複灌分；入選原因仍顯示實際成立項目。</p>
         </section>
         <section>
           <h2>排除過熱</h2>
           <ul class="rules compact danger">
             <li><span>5 日漲幅超過 10%</span></li>
             <li><span>20 日漲幅超過 20%</span></li>
-            <li><span>收盤超過 MA20 的 112%</span></li>
+            <li><span>MA20 正乖離超過 9%</span></li>
+            <li><span>K ≥ 80 且 MA20 正乖離超過 6%</span></li>
             <li><span>量比超過 4 倍</span></li>
           </ul>
         </section>
+      </div>
+      <div class="risk-plan">
+        <strong>交易與風控參考</strong>
+        <span>訊號次日開盤執行；若跳空超過前收 3% 則略過。初始停損參考 1.5 ATR，10 個交易日未突破則退出；實際執行仍需自行管理持倉。</span>
       </div>
     </details>
 
@@ -118,6 +121,7 @@
               <th data-sort="return_20d">20 日</th>
               <th data-sort="volume_ratio">量比</th>
               <th data-sort="k">K / D</th>
+              <th data-sort="ma20_deviation_pct">MA20 乖離</th>
               <th data-sort="distance_to_high20_pct">距高點</th>
               <th data-sort="reasons">入選原因</th>
             </tr>
@@ -136,6 +140,6 @@
       <span>價格未還原 · 下個交易日才可執行</span>
     </footer>
   </main>
-  <script src="app.js?v=20260905-2" defer></script>
+  <script src="app.js?v=20260906-1" defer></script>
 </body>
 </html>

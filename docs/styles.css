@@ -121,6 +121,9 @@ select:focus, input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgb
 .strategy-grid .scoring-rules { min-width: 0; }
 .strategy-grid h2 { margin: 0 0 10px; font-size: .95rem; }
 .strategy-grid p { margin: 10px 0 0; color: var(--muted); font-size: .8rem; }
+.risk-plan { display: grid; gap: 4px; padding: 14px 18px 17px; border-top: 1px solid rgba(32, 54, 82, .72); }
+.risk-plan strong { color: var(--amber); font-size: .88rem; }
+.risk-plan span { color: var(--muted); font-size: .8rem; }
 .rules { display: grid; grid-template-columns: 1fr 1fr; gap: 7px 10px; margin: 0; padding: 0; list-style: none; }
 .rules li { display: flex; gap: 7px; color: #b8cbe0; font-size: .82rem; }
 .rules strong { color: var(--lime); }
@@ -168,6 +171,7 @@ tbody tr:hover { background: rgba(68, 215, 232, .035); }
 .score { color: var(--lime); font-weight: 800; font-size: 1.05rem; }
 .positive { color: var(--red); }
 .negative { color: #73b9ff; }
+.warning { color: var(--amber); }
 .tag { display: inline-block; margin: 2px 4px 2px 0; padding: 3px 7px; border: 1px solid #294b68; border-radius: 999px; color: #b8cbe0; font-size: .72rem; }
 
 .empty { padding: 70px 20px; text-align: center; color: var(--muted); }

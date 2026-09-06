@@ -7,14 +7,15 @@ const state = {
 };
 
 const reasonOptions = [
-    "收盤 > MA5 > MA20",
-    "KD 動能加速",
+    "多頭均線排列",
+    "KD 加速且 K < 80",
     "5 日漲幅 1%～8%",
     "5 日相對強勢",
-    "量比 1.0～2.5",
+    "量比 1.2～2.5",
     "突破 10 日高點",
     "前日收斂、今日帶寬回升",
     "距 20 日高點不超過 5%",
+    "MA20 乖離 6%～9%（-1）",
 ];
 
 const els = {
@@ -51,16 +52,15 @@ const stockInfoUrl = (row) => {
 
 function updateSummary() {
   const meta = state.data.meta || {};
+  const regimeLabels = { bull: "多頭可操作", neutral: "震盪嚴選", bear: "偏空停選" };
   setText("#trade-date", meta.trade_date || "—");
   setText("#generated-at", meta.generated_at
     ? `更新 ${new Date(meta.generated_at).toLocaleString("zh-TW")}`
     : meta.message || "等待資料");
-  setText("#market-state", meta.market_above_ma60 === undefined
-    ? "—"
-    : meta.market_above_ma60 ? "MA60 多頭" : "MA60 偏弱");
+  setText("#market-state", regimeLabels[meta.market_regime] || "—");
   setText("#market-return", meta.market_return_5d === undefined
     ? "TAIEX 5 日報酬 —"
-    : `${meta.benchmark_source} 5 日 ${signed(meta.market_return_5d)}`);
+    : `市場寬度 ${number(meta.market_breadth_pct, 0)}% · 門檻 ${meta.required_score ?? "—"} 分`);
   setText("#setup-count", state.data.setup?.length || 0);
   setText("#data-note", meta.download_errors
     ? `本次有 ${meta.download_errors} 筆下載錯誤，請查看 workflow 紀錄。`
@@ -112,7 +112,7 @@ function render() {
       <td class="rank">${row.rank}</td>
       <td><a class="stock-link" href="${stockInfoUrl(row)}" target="_blank" rel="noopener noreferrer"><span class="stock"><strong>${escapeHtml(row.stock_id)} ${escapeHtml(row.stock_name)}</strong><span>${escapeHtml(row.market)} · 查看股票資訊 ↗</span></span></a></td>
       <td class="industry">${escapeHtml(row.industry || "未分類")}</td>
-      <td class="${tone(row.revenue_yoy)}"><span class="revenue"><strong>${signed(row.revenue_yoy)}</strong><span>${escapeHtml(row.revenue_month || "月份未提供")}</span></span></td>
+      <td class="${tone(row.revenue_yoy)}"><span class="revenue"><strong>${signed(row.revenue_yoy)}</strong><span>${escapeHtml(row.revenue_month || "月份未提供")} · 累計 ${signed(row.revenue_ytd_yoy)}</span></span></td>
       <td class="score">${row.score}</td>
       <td>${number(row.close)}</td>
       <td class="${tone(row.pct_change)}">${signed(row.pct_change)}</td>
@@ -120,6 +120,7 @@ function render() {
       <td class="${tone(row.return_20d)}">${signed(row.return_20d)}</td>
       <td>${number(row.volume_ratio)}×</td>
       <td>${number(row.k, 1)} / ${number(row.d, 1)}</td>
+      <td class="${Number(row.ma20_deviation_pct) > 6 ? "warning" : ""}">${signed(row.ma20_deviation_pct)}</td>
       <td>${signed(row.distance_to_high20_pct)}</td>
       <td>${(row.reasons || []).map((reason) => `<span class="tag">${escapeHtml(reason)}</span>`).join("")}</td>
     </tr>

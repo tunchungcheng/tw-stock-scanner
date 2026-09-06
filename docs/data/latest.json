@@ -2,18 +2,40 @@
   "status": "ready",
   "meta": {
     "trade_date": "2026-09-04",
-    "generated_at": "2026-09-07T00:47:44+08:00",
-    "benchmark_source": "TAIEX",
-    "market_return_5d": 0.47,
-    "market_return_20d": 5.26,
-    "market_above_ma60": true,
+    "generated_at": "2026-09-07T01:46:35+08:00",
+    "benchmark_source": "TWSE/TPEx 分流",
+    "market_return_5d": -0.65,
+    "market_return_20d": 0.36,
+    "market_above_ma60": false,
     "market_ma20_rising": true,
     "market_breadth_pct": 44.14,
     "market_regime": "neutral",
     "required_score": 8,
     "eligible_count": 1,
     "universe_count": 1944,
-    "download_errors": 5
+    "download_errors": 4,
+    "market_contexts": {
+      "TPEx": {
+        "benchmark_source": "TPEx市場中位數",
+        "market_return_5d": -0.8648658756650163,
+        "market_return_20d": 0.23998486117003948,
+        "market_above_ma60": false,
+        "market_ma20_rising": true,
+        "market_breadth_pct": 43.43786295005807,
+        "market_regime": "neutral",
+        "required_score": 8
+      },
+      "TWSE": {
+        "benchmark_source": "TAIEX",
+        "market_return_5d": 0.4741487693564528,
+        "market_return_20d": 5.257596734583858,
+        "market_above_ma60": true,
+        "market_ma20_rising": true,
+        "market_breadth_pct": 44.69067405355494,
+        "market_regime": "neutral",
+        "required_score": 8
+      }
+    }
   },
   "setup": [
     {
@@ -22,12 +44,17 @@
       "stock_id": "6177",
       "stock_name": "達麗",
       "industry": "建材營造",
+      "industry_breadth_pct": 50.91,
+      "industry_relative_20d": -0.09,
       "revenue_month": "2026-07",
+      "revenue_available_date": "2026-08-11",
       "revenue_yoy": 470.04,
       "revenue_ytd_yoy": 637.82,
       "close": 49.2,
       "pct_change": 0.92,
       "score": 8,
+      "market_regime": "neutral",
+      "required_score": 8,
       "k": 57.4,
       "d": 50.9,
       "volume_ratio": 1.42,
@@ -40,6 +67,8 @@
       "ma20_deviation_atr": 1.0,
       "initial_stop_reference": 47.33,
       "max_next_open": 50.68,
+      "entry_trigger": 50.3,
+      "cancel_below": 47.89,
       "reasons": [
         "多頭均線排列",
         "KD 加速且 K < 80",

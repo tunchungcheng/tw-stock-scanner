@@ -28,6 +28,7 @@
       "entry_price": 26.9,
       "stop_price": 0.0,
       "return_1d": -2.0,
+      "return_3d": 5.99,
       "stop_hit_10d": false
     },
     {
@@ -50,6 +51,7 @@
       "entry_price": 32.3,
       "stop_price": 0.0,
       "return_1d": -3.95,
+      "return_3d": -0.7,
       "stop_hit_10d": false
     },
     {
@@ -72,6 +74,7 @@
       "entry_price": 113.0,
       "stop_price": 0.0,
       "return_1d": -4.24,
+      "return_3d": -3.8,
       "stop_hit_10d": false
     },
     {
@@ -94,6 +97,7 @@
       "entry_price": 73.9,
       "stop_price": 0.0,
       "return_1d": -4.35,
+      "return_3d": -2.87,
       "stop_hit_10d": false
     },
     {
@@ -116,6 +120,7 @@
       "entry_price": 28.85,
       "stop_price": 0.0,
       "return_1d": -1.91,
+      "return_3d": -0.18,
       "stop_hit_10d": false
     },
     {
@@ -138,6 +143,7 @@
       "entry_price": 281.0,
       "stop_price": 0.0,
       "return_1d": -3.72,
+      "return_3d": -1.95,
       "stop_hit_10d": false
     },
     {
@@ -160,6 +166,7 @@
       "entry_price": 19.9,
       "stop_price": 0.0,
       "return_1d": -3.97,
+      "return_3d": -3.46,
       "stop_hit_10d": false
     },
     {
@@ -182,6 +189,7 @@
       "entry_price": 50.8,
       "stop_price": 0.0,
       "return_1d": -3.85,
+      "return_3d": -2.47,
       "stop_hit_10d": false
     },
     {
@@ -203,6 +211,7 @@
       "entry_price": 63.5,
       "stop_price": 0.0,
       "return_1d": -2.43,
+      "return_3d": -5.74,
       "stop_hit_10d": false
     },
     {
@@ -224,6 +233,7 @@
       "entry_price": 182.0,
       "stop_price": 0.0,
       "return_1d": -1.8,
+      "return_3d": -2.07,
       "stop_hit_10d": false
     },
     {
@@ -245,6 +255,7 @@
       "entry_price": 83.0,
       "stop_price": 0.0,
       "return_1d": -2.63,
+      "return_3d": -2.27,
       "stop_hit_10d": false
     },
     {
@@ -266,6 +277,7 @@
       "entry_price": 60.7,
       "stop_price": 0.0,
       "return_1d": -2.51,
+      "return_3d": -1.52,
       "stop_hit_10d": false
     },
     {
@@ -287,6 +299,7 @@
       "entry_price": 63.0,
       "stop_price": 0.0,
       "return_1d": -3.24,
+      "return_3d": -2.45,
       "stop_hit_10d": false
     },
     {
@@ -308,6 +321,7 @@
       "entry_price": 30.15,
       "stop_price": 0.0,
       "return_1d": -4.02,
+      "return_3d": -5.68,
       "stop_hit_10d": false
     },
     {
@@ -329,6 +343,7 @@
       "entry_price": 66.7,
       "stop_price": 0.0,
       "return_1d": 2.0,
+      "return_3d": 4.55,
       "stop_hit_10d": false
     },
     {
@@ -350,6 +365,7 @@
       "entry_price": 157.0,
       "stop_price": 0.0,
       "return_1d": -4.84,
+      "return_3d": 0.26,
       "stop_hit_10d": false
     },
     {
@@ -371,6 +387,7 @@
       "entry_price": 217.0,
       "stop_price": 0.0,
       "return_1d": -4.39,
+      "return_3d": -2.54,
       "stop_hit_10d": false
     },
     {
@@ -392,6 +409,7 @@
       "entry_price": 49.85,
       "stop_price": 0.0,
       "return_1d": -4.21,
+      "return_3d": -0.5,
       "stop_hit_10d": false
     },
     {
@@ -413,6 +431,7 @@
       "entry_price": 281.5,
       "stop_price": 0.0,
       "return_1d": -3.01,
+      "return_3d": -2.65,
       "stop_hit_10d": false
     },
     {
@@ -434,6 +453,7 @@
       "entry_price": 49.0,
       "stop_price": 0.0,
       "return_1d": 2.16,
+      "return_3d": 1.75,
       "stop_hit_10d": false
     },
     {
@@ -869,7 +889,7 @@
         "前日收斂、今日帶寬回升",
         "距 20 日高點不超過 5%"
       ],
-      "status": "pending"
+      "status": "skipped_no_trigger"
     }
   ]
 }

@@ -476,6 +476,7 @@
       "entry_price": 50.7,
       "stop_price": 0.0,
       "return_1d": -1.69,
+      "return_3d": -3.36,
       "stop_hit_10d": false
     },
     {
@@ -498,6 +499,7 @@
       "entry_price": 31.95,
       "stop_price": 0.0,
       "return_1d": 1.65,
+      "return_3d": -3.52,
       "stop_hit_10d": false
     },
     {
@@ -520,6 +522,7 @@
       "entry_price": 72.7,
       "stop_price": 0.0,
       "return_1d": -1.25,
+      "return_3d": -2.76,
       "stop_hit_10d": false
     },
     {
@@ -559,6 +562,7 @@
       "entry_price": 63.8,
       "stop_price": 0.0,
       "return_1d": -0.39,
+      "return_3d": -1.01,
       "stop_hit_10d": false
     },
     {
@@ -597,6 +601,7 @@
       "entry_price": 28.95,
       "stop_price": 0.0,
       "return_1d": 0.34,
+      "return_3d": -1.74,
       "stop_hit_10d": false
     },
     {
@@ -618,6 +623,7 @@
       "entry_price": 62.6,
       "stop_price": 0.0,
       "return_1d": -2.78,
+      "return_3d": -5.49,
       "stop_hit_10d": false
     },
     {
@@ -639,6 +645,7 @@
       "entry_price": 180.5,
       "stop_price": 0.0,
       "return_1d": -1.25,
+      "return_3d": -1.53,
       "stop_hit_10d": false
     },
     {
@@ -660,6 +667,7 @@
       "entry_price": 340.5,
       "stop_price": 0.0,
       "return_1d": 0.62,
+      "return_3d": -4.37,
       "stop_hit_10d": false
     },
     {
@@ -681,6 +689,7 @@
       "entry_price": 83.6,
       "stop_price": 0.0,
       "return_1d": -1.42,
+      "return_3d": -1.18,
       "stop_hit_10d": false
     },
     {
@@ -702,6 +711,7 @@
       "entry_price": 265.0,
       "stop_price": 0.0,
       "return_1d": -1.83,
+      "return_3d": 0.62,
       "stop_hit_10d": false
     },
     {
@@ -723,6 +733,7 @@
       "entry_price": 156.5,
       "stop_price": 0.0,
       "return_1d": -0.7,
+      "return_3d": -3.26,
       "stop_hit_10d": false
     },
     {
@@ -744,6 +755,7 @@
       "entry_price": 728.0,
       "stop_price": 0.0,
       "return_1d": -5.23,
+      "return_3d": -2.21,
       "stop_hit_10d": false
     },
     {
@@ -765,6 +777,7 @@
       "entry_price": 29.2,
       "stop_price": 0.0,
       "return_1d": -0.87,
+      "return_3d": -2.58,
       "stop_hit_10d": false
     },
     {
@@ -786,6 +799,7 @@
       "entry_price": 183.5,
       "stop_price": 0.0,
       "return_1d": -2.88,
+      "return_3d": -5.33,
       "stop_hit_10d": false
     },
     {
@@ -807,6 +821,7 @@
       "entry_price": 8.6,
       "stop_price": 0.0,
       "return_1d": -0.12,
+      "return_3d": 0.23,
       "stop_hit_10d": false
     },
     {
@@ -828,6 +843,7 @@
       "entry_price": 49.35,
       "stop_price": 0.0,
       "return_1d": -1.0,
+      "return_3d": -3.94,
       "stop_hit_10d": false
     },
     {
@@ -849,6 +865,7 @@
       "entry_price": 20.0,
       "stop_price": 0.0,
       "return_1d": -0.7,
+      "return_3d": -1.45,
       "stop_hit_10d": false
     },
     {
@@ -870,6 +887,7 @@
       "entry_price": 388.0,
       "stop_price": 0.0,
       "return_1d": -1.47,
+      "return_3d": -3.79,
       "stop_hit_10d": false
     },
     {

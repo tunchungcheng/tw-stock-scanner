@@ -1,6 +1,6 @@
 {
   "summary": {
-    "published_signals": 41,
+    "published_signals": 42,
     "entered_signals": 38,
     "completed_10d": 0,
     "win_rate_10d": null,
@@ -945,6 +945,23 @@
         "距 20 日高點不超過 5%"
       ],
       "status": "skipped_no_trigger"
+    },
+    {
+      "signal_date": "2026-09-15",
+      "market": "TWSE",
+      "stock_id": "6214",
+      "stock_name": "精誠",
+      "industry": "資訊服務業",
+      "score": 8,
+      "reasons": [
+        "多頭均線排列",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "距 20 日高點不超過 5%",
+        "產業相對強勢"
+      ],
+      "status": "pending"
     }
   ]
 }

@@ -1,10 +1,10 @@
 {
   "summary": {
-    "published_signals": 42,
+    "published_signals": 43,
     "entered_signals": 38,
-    "completed_10d": 0,
-    "win_rate_10d": null,
-    "average_return_10d": null,
+    "completed_10d": 19,
+    "win_rate_10d": 36.84,
+    "average_return_10d": -1.34,
     "estimated_cost_pct": 0.7
   },
   "signals": [
@@ -30,6 +30,7 @@
       "return_1d": -2.0,
       "return_3d": 5.99,
       "return_5d": 12.68,
+      "return_10d": 8.59,
       "stop_hit_10d": false
     },
     {
@@ -54,6 +55,7 @@
       "return_1d": -3.95,
       "return_3d": -0.7,
       "return_5d": -2.25,
+      "return_10d": -1.63,
       "stop_hit_10d": false
     },
     {
@@ -78,6 +80,7 @@
       "return_1d": -4.24,
       "return_3d": -3.8,
       "return_5d": -2.47,
+      "return_10d": 5.05,
       "stop_hit_10d": false
     },
     {
@@ -102,6 +105,7 @@
       "return_1d": -4.35,
       "return_3d": -2.87,
       "return_5d": -2.73,
+      "return_10d": 0.38,
       "stop_hit_10d": false
     },
     {
@@ -126,6 +130,7 @@
       "return_1d": -1.91,
       "return_3d": -0.18,
       "return_5d": -0.87,
+      "return_10d": 0.34,
       "stop_hit_10d": false
     },
     {
@@ -150,6 +155,7 @@
       "return_1d": -3.72,
       "return_3d": -1.95,
       "return_5d": -0.52,
+      "return_10d": -2.84,
       "stop_hit_10d": false
     },
     {
@@ -174,6 +180,7 @@
       "return_1d": -3.97,
       "return_3d": -3.46,
       "return_5d": -5.22,
+      "return_10d": -6.23,
       "stop_hit_10d": false
     },
     {
@@ -198,6 +205,7 @@
       "return_1d": -3.85,
       "return_3d": -2.47,
       "return_5d": -2.57,
+      "return_10d": -3.75,
       "stop_hit_10d": false
     },
     {
@@ -244,6 +252,7 @@
       "return_1d": -1.8,
       "return_3d": -2.07,
       "return_5d": -2.62,
+      "return_10d": -2.9,
       "stop_hit_10d": false
     },
     {
@@ -267,6 +276,7 @@
       "return_1d": -2.63,
       "return_3d": -2.27,
       "return_5d": -4.8,
+      "return_10d": -5.76,
       "stop_hit_10d": false
     },
     {
@@ -290,6 +300,7 @@
       "return_1d": -2.51,
       "return_3d": -1.52,
       "return_5d": 0.45,
+      "return_10d": 7.37,
       "stop_hit_10d": false
     },
     {
@@ -313,6 +324,7 @@
       "return_1d": -3.24,
       "return_3d": -2.45,
       "return_5d": -5.62,
+      "return_10d": -7.05,
       "stop_hit_10d": false
     },
     {
@@ -336,6 +348,7 @@
       "return_1d": -4.02,
       "return_3d": -5.68,
       "return_5d": -6.01,
+      "return_10d": -8.99,
       "stop_hit_10d": false
     },
     {
@@ -359,6 +372,7 @@
       "return_1d": 2.0,
       "return_3d": 4.55,
       "return_5d": 3.8,
+      "return_10d": 3.35,
       "stop_hit_10d": false
     },
     {
@@ -382,6 +396,7 @@
       "return_1d": -4.84,
       "return_3d": 0.26,
       "return_5d": -1.02,
+      "return_10d": -2.93,
       "stop_hit_10d": false
     },
     {
@@ -405,6 +420,7 @@
       "return_1d": -4.39,
       "return_3d": -2.54,
       "return_5d": -2.54,
+      "return_10d": -3.93,
       "stop_hit_10d": false
     },
     {
@@ -428,6 +444,7 @@
       "return_1d": -4.21,
       "return_3d": -0.5,
       "return_5d": -0.2,
+      "return_10d": -3.01,
       "stop_hit_10d": false
     },
     {
@@ -451,6 +468,7 @@
       "return_1d": -3.01,
       "return_3d": -2.65,
       "return_5d": -1.41,
+      "return_10d": -4.79,
       "stop_hit_10d": false
     },
     {
@@ -474,6 +492,7 @@
       "return_1d": 2.16,
       "return_3d": 1.75,
       "return_5d": 1.95,
+      "return_10d": 3.18,
       "stop_hit_10d": false
     },
     {
@@ -948,6 +967,23 @@
     },
     {
       "signal_date": "2026-09-15",
+      "market": "TWSE",
+      "stock_id": "6214",
+      "stock_name": "精誠",
+      "industry": "資訊服務業",
+      "score": 8,
+      "reasons": [
+        "多頭均線排列",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "距 20 日高點不超過 5%",
+        "產業相對強勢"
+      ],
+      "status": "skipped_no_trigger"
+    },
+    {
+      "signal_date": "2026-09-16",
       "market": "TWSE",
       "stock_id": "6214",
       "stock_name": "精誠",

@@ -1,7 +1,7 @@
 {
   "summary": {
-    "published_signals": 45,
-    "entered_signals": 39,
+    "published_signals": 52,
+    "entered_signals": 40,
     "completed_10d": 36,
     "win_rate_10d": 30.56,
     "average_return_10d": -1.81,
@@ -1037,7 +1037,7 @@
         "突破 10 日高點",
         "距 20 日高點不超過 5%"
       ],
-      "status": "pending"
+      "status": "skipped_no_trigger"
     },
     {
       "signal_date": "2026-09-17",
@@ -1053,6 +1053,135 @@
         "量比 1.2～2.5",
         "突破 10 日高點",
         "距 20 日高點不超過 5%"
+      ],
+      "status": "entered",
+      "entry_date": "2026-09-18",
+      "entry_price": 112.0,
+      "stop_price": 106.32,
+      "return_1d": 1.53,
+      "stop_hit_10d": false
+    },
+    {
+      "signal_date": "2026-09-18",
+      "market": "TWSE",
+      "stock_id": "3036",
+      "stock_name": "文曄",
+      "industry": "電子通路業",
+      "score": 8,
+      "reasons": [
+        "多頭均線排列",
+        "KD 加速且 K < 80",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "距 20 日高點不超過 5%",
+        "產業相對強勢"
+      ],
+      "status": "pending"
+    },
+    {
+      "signal_date": "2026-09-18",
+      "market": "TWSE",
+      "stock_id": "4771",
+      "stock_name": "望隼",
+      "industry": "生技醫療業",
+      "score": 8,
+      "reasons": [
+        "多頭均線排列",
+        "KD 加速且 K < 80",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "突破 10 日高點",
+        "距 20 日高點不超過 5%"
+      ],
+      "status": "pending"
+    },
+    {
+      "signal_date": "2026-09-18",
+      "market": "TWSE",
+      "stock_id": "2363",
+      "stock_name": "矽統",
+      "industry": "半導體業",
+      "score": 8,
+      "reasons": [
+        "多頭均線排列",
+        "KD 加速且 K < 80",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "距 20 日高點不超過 5%",
+        "產業相對強勢"
+      ],
+      "status": "pending"
+    },
+    {
+      "signal_date": "2026-09-18",
+      "market": "TWSE",
+      "stock_id": "3711",
+      "stock_name": "日月光投控",
+      "industry": "半導體業",
+      "score": 8,
+      "reasons": [
+        "多頭均線排列",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "距 20 日高點不超過 5%",
+        "產業相對強勢"
+      ],
+      "status": "pending"
+    },
+    {
+      "signal_date": "2026-09-18",
+      "market": "TWSE",
+      "stock_id": "8926",
+      "stock_name": "台汽電",
+      "industry": "油電燃氣業",
+      "score": 8,
+      "reasons": [
+        "多頭均線排列",
+        "KD 加速且 K < 80",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "距 20 日高點不超過 5%",
+        "產業相對強勢"
+      ],
+      "status": "pending"
+    },
+    {
+      "signal_date": "2026-09-18",
+      "market": "TWSE",
+      "stock_id": "9945",
+      "stock_name": "潤泰新",
+      "industry": "其他",
+      "score": 8,
+      "reasons": [
+        "多頭均線排列",
+        "KD 加速且 K < 80",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "突破 10 日高點",
+        "距 20 日高點不超過 5%"
+      ],
+      "status": "pending"
+    },
+    {
+      "signal_date": "2026-09-18",
+      "market": "TWSE",
+      "stock_id": "5434",
+      "stock_name": "崇越",
+      "industry": "電子通路業",
+      "score": 8,
+      "reasons": [
+        "多頭均線排列",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "距 20 日高點不超過 5%",
+        "產業相對強勢"
       ],
       "status": "pending"
     }

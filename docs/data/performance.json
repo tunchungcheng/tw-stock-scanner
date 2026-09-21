@@ -1,7 +1,7 @@
 {
   "summary": {
-    "published_signals": 52,
-    "entered_signals": 40,
+    "published_signals": 54,
+    "entered_signals": 44,
     "completed_10d": 36,
     "win_rate_10d": 30.56,
     "average_return_10d": -1.81,
@@ -673,6 +673,7 @@
       "stop_price": 0.0,
       "return_1d": -2.78,
       "return_3d": -5.49,
+      "return_5d": 8.88,
       "stop_hit_10d": false
     },
     {
@@ -1019,6 +1020,7 @@
       "entry_price": 193.0,
       "stop_price": 185.54,
       "return_1d": -0.7,
+      "return_3d": -1.48,
       "stop_hit_10d": false
     },
     {
@@ -1077,7 +1079,7 @@
         "距 20 日高點不超過 5%",
         "產業相對強勢"
       ],
-      "status": "pending"
+      "status": "skipped_no_trigger"
     },
     {
       "signal_date": "2026-09-18",
@@ -1095,7 +1097,12 @@
         "突破 10 日高點",
         "距 20 日高點不超過 5%"
       ],
-      "status": "pending"
+      "status": "entered",
+      "entry_date": "2026-09-21",
+      "entry_price": 219.5,
+      "stop_price": 204.88,
+      "return_1d": -0.93,
+      "stop_hit_10d": false
     },
     {
       "signal_date": "2026-09-18",
@@ -1113,7 +1120,12 @@
         "距 20 日高點不超過 5%",
         "產業相對強勢"
       ],
-      "status": "pending"
+      "status": "entered",
+      "entry_date": "2026-09-21",
+      "entry_price": 55.2,
+      "stop_price": 50.5,
+      "return_1d": 6.18,
+      "stop_hit_10d": false
     },
     {
       "signal_date": "2026-09-18",
@@ -1130,7 +1142,12 @@
         "距 20 日高點不超過 5%",
         "產業相對強勢"
       ],
-      "status": "pending"
+      "status": "entered",
+      "entry_date": "2026-09-21",
+      "entry_price": 655.0,
+      "stop_price": 599.43,
+      "return_1d": 0.52,
+      "stop_hit_10d": false
     },
     {
       "signal_date": "2026-09-18",
@@ -1148,7 +1165,12 @@
         "距 20 日高點不超過 5%",
         "產業相對強勢"
       ],
-      "status": "pending"
+      "status": "entered",
+      "entry_date": "2026-09-21",
+      "entry_price": 60.0,
+      "stop_price": 57.84,
+      "return_1d": -1.53,
+      "stop_hit_10d": false
     },
     {
       "signal_date": "2026-09-18",
@@ -1166,7 +1188,7 @@
         "突破 10 日高點",
         "距 20 日高點不超過 5%"
       ],
-      "status": "pending"
+      "status": "skipped_no_trigger"
     },
     {
       "signal_date": "2026-09-18",
@@ -1174,6 +1196,41 @@
       "stock_id": "5434",
       "stock_name": "崇越",
       "industry": "電子通路業",
+      "score": 8,
+      "reasons": [
+        "多頭均線排列",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "距 20 日高點不超過 5%",
+        "產業相對強勢"
+      ],
+      "status": "skipped_no_trigger"
+    },
+    {
+      "signal_date": "2026-09-21",
+      "market": "TWSE",
+      "stock_id": "2376",
+      "stock_name": "技嘉",
+      "industry": "電腦及週邊設備業",
+      "score": 8,
+      "reasons": [
+        "多頭均線排列",
+        "KD 加速且 K < 80",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "距 20 日高點不超過 5%",
+        "產業相對強勢"
+      ],
+      "status": "pending"
+    },
+    {
+      "signal_date": "2026-09-21",
+      "market": "TWSE",
+      "stock_id": "6206",
+      "stock_name": "飛捷",
+      "industry": "電腦及週邊設備業",
       "score": 8,
       "reasons": [
         "多頭均線排列",

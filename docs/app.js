@@ -26,6 +26,9 @@ const els = {
   reasonSort: document.querySelector("#reason-sort"),
   search: document.querySelector("#search-input"),
   csv: document.querySelector("#csv-link"),
+  aiPrompt: document.querySelector("#ai-prompt"),
+  copyAiPrompt: document.querySelector("#copy-ai-prompt"),
+  aiPromptStatus: document.querySelector("#ai-prompt-status"),
 };
 
 const number = (value, digits = 2) =>
@@ -98,6 +101,81 @@ function visibleRows() {
   });
 }
 
+function buildAiResearchPrompt(rows) {
+  if (!rows.length) {
+    return "目前畫面沒有股票，請先調整搜尋條件或切換到有候選股的交易日。";
+  }
+
+  const tradeDate = state.data.meta?.trade_date || "未提供";
+  const candidates = rows.map((row, index) => [
+    `${index + 1}. ${row.stock_id} ${row.stock_name}`,
+    `（${row.market}／${row.industry || "未分類"}，掃描日收盤 ${number(row.close)} 元`,
+    `，月營收 YoY ${signed(row.revenue_yoy)}，累計 YoY ${signed(row.revenue_ytd_yoy)}`,
+    `，5 日 ${signed(row.return_5d)}，20 日 ${signed(row.return_20d)}`,
+    `，掃描分數 ${row.score ?? "—"}）`,
+  ].join("")).join("\n");
+
+  return `你是一位以 Peter Lynch 成長合理價值（GARP）方法研究台股的分析助手。以下股票已先通過技術面、量能、營收與產業條件篩選，請再做基本面估值，不要把掃描分數直接當成買進依據。
+
+資料基準日：${tradeDate}
+候選股票：
+${candidates}
+
+請使用目前可取得的最新公開資訊，優先採用公司公告、公開資訊觀測站、法說會、財報與可信市場資料，逐檔完成以下研究：
+
+1. 依 Peter Lynch 的觀點判斷公司較接近緩慢成長、穩健成長、快速成長、景氣循環、資產機會或轉機型；說明判斷依據。
+2. 檢查近年與近四季 EPS、營收、獲利成長、毛利率／營益率、負債、現金流與股本變化。適用時估算 PEG＝本益比 ÷ 預期盈餘成長率；景氣循環股不要直接用高峰獲利外推。
+3. 評估合理股價：清楚寫出估值方法、關鍵假設、基準合理價與合理價區間。可依公司特性使用合理本益比、PEG、正常化 EPS、股利或資產價值交叉驗證。資料不足時請標示「無法可靠估值」，不要硬算。
+4. 以掃描日收盤價為比較基準，計算合理價相對現價的低估／高估幅度，並將所有候選股依「低估程度由高到低」排序。若估值可信度差異很大，請同時標示可信度。
+5. 每檔列出未來 6～24 個月可能的新發展、成長催化劑與主要風險，並區分已公告事實與推測。
+6. 每檔提出可驗證的「加碼、持有、賣出」條件，例如盈餘成長、估值、負債、產品進度、產業循環或基本面惡化條件；不要只用股價漲跌作為唯一理由。
+7. 每項重要數字附來源與資料日期，確認資訊確實是目前可知的最新資料；若不同來源口徑不一致，請說明差異。
+
+請先輸出一張排序表，至少包含：
+排名｜股票｜掃描日收盤價｜合理價｜合理價區間｜低估／高估幅度｜PEG／主要估值依據｜估值可信度
+
+接著逐檔回答：
+「請用 Peter Lynch 的方法幫我研究台股『股票名稱』：
+1. 根據目前可知的最新資訊評估，『合理股價』是多少？
+2. 未來可能有什麼新發展？加碼、持有或賣出的條件是什麼？」
+
+最後再列出：
+- 最關鍵的估值假設
+- 可能讓合理價失效的風險
+- 哪些股票因資料不足而不應強行排序
+
+請把事實、估值假設與推論清楚分開，金額一律使用新台幣。這是研究用途，不要把任何單一估值模型當成保證。\`;
+}
+
+function updateAiPrompt(rows) {
+  if (!els.aiPrompt) return;
+  els.aiPrompt.value = buildAiResearchPrompt(rows);
+  if (els.aiPromptStatus) {
+    els.aiPromptStatus.textContent = rows.length
+      ? `已帶入目前畫面 ${rows.length} 檔股票，會依畫面排序送入研究提示詞。`
+      : "目前沒有可帶入的股票。";
+  }
+}
+
+async function copyAiPrompt() {
+  if (!els.aiPrompt) return;
+  const prompt = els.aiPrompt.value;
+  if (!prompt) return;
+
+  try {
+    await navigator.clipboard.writeText(prompt);
+  } catch (_) {
+    els.aiPrompt.focus();
+    els.aiPrompt.select();
+    document.execCommand("copy");
+    els.aiPrompt.setSelectionRange(0, 0);
+  }
+
+  if (els.aiPromptStatus) {
+    els.aiPromptStatus.textContent = "已複製提示詞，可貼到具備最新網路資訊能力的 AI 進行研究。";
+  }
+}
+
 function updateReasonOptions() {
   if (!els.reasonSort) return;
   const current = state.reasonPriority;
@@ -136,6 +214,7 @@ function render() {
     </tr>
   `).join("");
   els.empty.hidden = rows.length > 0;
+  updateAiPrompt(rows);
 }
 
 async function loadPerformance() {
@@ -189,6 +268,8 @@ async function loadDates() {
     // 最新資料仍可正常顯示。
   }
 }
+
+els.copyAiPrompt?.addEventListener("click", copyAiPrompt);
 
 els.reasonSort?.addEventListener("change", (event) => {
   state.reasonPriority = event.target.value;

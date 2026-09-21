@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="台股動能蓄勢股票每日掃描結果">
   <title>台股動能雷達</title>
-  <link rel="stylesheet" href="styles.css?v=20260906-2">
+  <link rel="stylesheet" href="styles.css?v=20260922-1">
 </head>
 <body>
   <main class="shell">
@@ -144,11 +144,24 @@
       </div>
     </section>
 
+    <section class="ai-research" aria-labelledby="ai-research-title">
+      <div class="ai-research-heading">
+        <div>
+          <p class="eyebrow">AI VALUATION RESEARCH</p>
+          <h2 id="ai-research-title">Peter Lynch 估值研究提示詞</h2>
+          <p>自動帶入目前畫面的篩選名單，要求 AI 依低估程度排序、估算合理價，並列出加碼、持有與賣出條件。</p>
+        </div>
+        <button class="copy-prompt" id="copy-ai-prompt" type="button">複製提示詞</button>
+      </div>
+      <textarea id="ai-prompt" class="ai-prompt" rows="18" spellcheck="false" aria-label="Peter Lynch AI 估值研究提示詞"></textarea>
+      <small id="ai-prompt-status">載入篩選結果後會自動產生提示詞。</small>
+    </section>
+
     <footer>
       <span id="data-note">收盤後訊號，僅供研究。</span>
       <span>價格未還原 · 下個交易日才可執行</span>
     </footer>
   </main>
-  <script src="app.js?v=20260906-2" defer></script>
+  <script src="app.js?v=20260922-1" defer></script>
 </body>
 </html>

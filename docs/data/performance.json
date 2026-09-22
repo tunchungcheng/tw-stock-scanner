@@ -1,7 +1,7 @@
 {
   "summary": {
-    "published_signals": 54,
-    "entered_signals": 44,
+    "published_signals": 57,
+    "entered_signals": 45,
     "completed_10d": 36,
     "win_rate_10d": 30.56,
     "average_return_10d": -1.81,
@@ -1061,6 +1061,7 @@
       "entry_price": 112.0,
       "stop_price": 106.32,
       "return_1d": 1.53,
+      "return_3d": 0.19,
       "stop_hit_10d": false
     },
     {
@@ -1223,7 +1224,7 @@
         "距 20 日高點不超過 5%",
         "產業相對強勢"
       ],
-      "status": "pending"
+      "status": "skipped_no_trigger"
     },
     {
       "signal_date": "2026-09-21",
@@ -1234,6 +1235,63 @@
       "score": 8,
       "reasons": [
         "多頭均線排列",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "距 20 日高點不超過 5%",
+        "產業相對強勢"
+      ],
+      "status": "entered",
+      "entry_date": "2026-09-22",
+      "entry_price": 143.0,
+      "stop_price": 135.3,
+      "return_1d": -2.45,
+      "stop_hit_10d": false
+    },
+    {
+      "signal_date": "2026-09-22",
+      "market": "TWSE",
+      "stock_id": "6937",
+      "stock_name": "天虹",
+      "industry": "半導體業",
+      "score": 8,
+      "reasons": [
+        "多頭均線排列",
+        "KD 加速且 K < 80",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "距 20 日高點不超過 5%",
+        "產業相對強勢"
+      ],
+      "status": "pending"
+    },
+    {
+      "signal_date": "2026-09-22",
+      "market": "TWSE",
+      "stock_id": "2401",
+      "stock_name": "凌陽",
+      "industry": "半導體業",
+      "score": 8,
+      "reasons": [
+        "多頭均線排列",
+        "KD 加速且 K < 80",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "距 20 日高點不超過 5%",
+        "產業相對強勢"
+      ],
+      "status": "pending"
+    },
+    {
+      "signal_date": "2026-09-22",
+      "market": "TWSE",
+      "stock_id": "2436",
+      "stock_name": "偉詮電",
+      "industry": "半導體業",
+      "score": 8,
+      "reasons": [
+        "多頭均線排列",
+        "KD 加速且 K < 80",
         "5 日漲幅 1%～8%",
         "5 日相對強勢",
         "量比 1.2～2.5",

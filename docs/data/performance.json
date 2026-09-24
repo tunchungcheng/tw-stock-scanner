@@ -1,7 +1,7 @@
 {
   "summary": {
-    "published_signals": 60,
-    "entered_signals": 46,
+    "published_signals": 62,
+    "entered_signals": 48,
     "completed_10d": 36,
     "win_rate_10d": 30.56,
     "average_return_10d": -1.81,
@@ -1063,6 +1063,7 @@
       "stop_price": 106.32,
       "return_1d": 1.53,
       "return_3d": 0.19,
+      "return_5d": 4.21,
       "stop_hit_10d": false
     },
     {
@@ -1251,6 +1252,7 @@
       "entry_price": 143.0,
       "stop_price": 135.3,
       "return_1d": -2.45,
+      "return_3d": -3.5,
       "stop_hit_10d": false
     },
     {
@@ -1326,7 +1328,12 @@
         "突破 10 日高點",
         "距 20 日高點不超過 5%"
       ],
-      "status": "pending"
+      "status": "entered",
+      "entry_date": "2026-09-24",
+      "entry_price": 67.8,
+      "stop_price": 64.97,
+      "return_1d": 8.89,
+      "stop_hit_10d": false
     },
     {
       "signal_date": "2026-09-23",
@@ -1343,7 +1350,12 @@
         "前日收斂、今日帶寬回升",
         "距 20 日高點不超過 5%"
       ],
-      "status": "pending"
+      "status": "entered",
+      "entry_date": "2026-09-24",
+      "entry_price": 30.35,
+      "stop_price": 28.7,
+      "return_1d": -2.18,
+      "stop_hit_10d": false
     },
     {
       "signal_date": "2026-09-23",
@@ -1359,6 +1371,46 @@
         "量比 1.2～2.5",
         "突破 10 日高點",
         "距 20 日高點不超過 5%"
+      ],
+      "status": "skipped_no_trigger"
+    },
+    {
+      "signal_date": "2026-09-24",
+      "market": "TWSE",
+      "stock_id": "2436",
+      "stock_name": "偉詮電",
+      "industry": "半導體業",
+      "score": 8,
+      "reasons": [
+        "多頭均線排列",
+        "KD 加速且 K < 80",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "突破 10 日高點",
+        "距 20 日高點不超過 5%",
+        "產業相對強勢",
+        "MA20 乖離 6%～9%（-1）"
+      ],
+      "status": "pending"
+    },
+    {
+      "signal_date": "2026-09-24",
+      "market": "TWSE",
+      "stock_id": "2302",
+      "stock_name": "麗正",
+      "industry": "半導體業",
+      "score": 8,
+      "reasons": [
+        "多頭均線排列",
+        "KD 加速且 K < 80",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "前日收斂、今日帶寬回升",
+        "距 20 日高點不超過 5%",
+        "產業相對強勢",
+        "MA20 乖離 6%～9%（-1）"
       ],
       "status": "pending"
     }

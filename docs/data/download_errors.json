@@ -5,9 +5,34 @@
     "error": "TPEx 找不到行情欄位；官方格式可能已變更：{\"date\": \"20260501\", \"tables\": [{\"title\": \"上櫃股票行情\", \"subtitle\": \"上櫃家數: 0家&nbsp;&nbsp;&nbsp;總成交金額: 0元&nbsp;&nbsp;&nbsp;總成交股數: 0股&nbsp;&nbsp;&nbsp;總成交筆數: 0筆\", \"date\": \"115/05/01\", \"listedCompanies\": \"0\", \"totalTradingAmount\": \"0\", \"totalTradingShares\": \"0\", \"totalTranscations\": \"0\", \"totalCount\": 0, \""
   },
   {
+    "date": "2026-06-11",
+    "market": "TPEx",
+    "error": "下載失敗：https://www.tpex.org.tw/www/zh-tw/afterTrading/dailyQuotes，IncompleteRead(286434 bytes read)"
+  },
+  {
+    "date": "2026-06-16",
+    "market": "TPEx",
+    "error": "下載失敗：https://www.tpex.org.tw/www/zh-tw/afterTrading/dailyQuotes，IncompleteRead(417506 bytes read)"
+  },
+  {
     "date": "2026-06-19",
     "market": "TPEx",
     "error": "TPEx 找不到行情欄位；官方格式可能已變更：{\"date\": \"20260619\", \"tables\": [{\"title\": \"上櫃股票行情\", \"subtitle\": \"上櫃家數: 0家&nbsp;&nbsp;&nbsp;總成交金額: 0元&nbsp;&nbsp;&nbsp;總成交股數: 0股&nbsp;&nbsp;&nbsp;總成交筆數: 0筆\", \"date\": \"115/06/19\", \"listedCompanies\": \"0\", \"totalTradingAmount\": \"0\", \"totalTradingShares\": \"0\", \"totalTranscations\": \"0\", \"totalCount\": 0, \""
+  },
+  {
+    "date": "2026-06-25",
+    "market": "TPEx",
+    "error": "下載失敗：https://www.tpex.org.tw/www/zh-tw/afterTrading/dailyQuotes，IncompleteRead(499426 bytes read)"
+  },
+  {
+    "date": "2026-06-29",
+    "market": "TPEx",
+    "error": "下載失敗：https://www.tpex.org.tw/www/zh-tw/afterTrading/dailyQuotes，IncompleteRead(597730 bytes read)"
+  },
+  {
+    "date": "2026-07-07",
+    "market": "TPEx",
+    "error": "下載失敗：https://www.tpex.org.tw/www/zh-tw/afterTrading/dailyQuotes，IncompleteRead(204514 bytes read)"
   },
   {
     "date": "2026-07-10",
@@ -15,8 +40,43 @@
     "error": "TPEx 找不到行情欄位；官方格式可能已變更：{\"date\": \"20260710\", \"tables\": [{\"title\": \"上櫃股票行情\", \"subtitle\": \"上櫃家數: 0家&nbsp;&nbsp;&nbsp;總成交金額: 0元&nbsp;&nbsp;&nbsp;總成交股數: 0股&nbsp;&nbsp;&nbsp;總成交筆數: 0筆\", \"date\": \"115/07/10\", \"listedCompanies\": \"0\", \"totalTradingAmount\": \"0\", \"totalTradingShares\": \"0\", \"totalTranscations\": \"0\", \"totalCount\": 0, \""
   },
   {
-    "date": "2026-08-14",
+    "date": "2026-07-20",
     "market": "TPEx",
-    "error": "下載失敗：https://www.tpex.org.tw/www/zh-tw/afterTrading/dailyQuotes，IncompleteRead(155362 bytes read)"
+    "error": "下載失敗：https://www.tpex.org.tw/www/zh-tw/afterTrading/dailyQuotes，IncompleteRead(15406 bytes read)"
+  },
+  {
+    "date": "2026-07-21",
+    "market": "TPEx",
+    "error": "下載失敗：https://www.tpex.org.tw/www/zh-tw/afterTrading/dailyQuotes，IncompleteRead(424606 bytes read)"
+  },
+  {
+    "date": "2026-08-05",
+    "market": "TPEx",
+    "error": "下載失敗：https://www.tpex.org.tw/www/zh-tw/afterTrading/dailyQuotes，IncompleteRead(588318 bytes read)"
+  },
+  {
+    "date": "2026-09-07",
+    "market": "TPEx",
+    "error": "下載失敗：https://www.tpex.org.tw/www/zh-tw/afterTrading/dailyQuotes，IncompleteRead(171746 bytes read)"
+  },
+  {
+    "date": "2026-09-09",
+    "market": "TPEx",
+    "error": "下載失敗：https://www.tpex.org.tw/www/zh-tw/afterTrading/dailyQuotes，IncompleteRead(794338 bytes read)"
+  },
+  {
+    "date": "2026-09-16",
+    "market": "TPEx",
+    "error": "下載失敗：https://www.tpex.org.tw/www/zh-tw/afterTrading/dailyQuotes，IncompleteRead(687842 bytes read)"
+  },
+  {
+    "date": "2026-09-21",
+    "market": "TPEx",
+    "error": "下載失敗：https://www.tpex.org.tw/www/zh-tw/afterTrading/dailyQuotes，IncompleteRead(253666 bytes read)"
+  },
+  {
+    "date": "2026-09-25",
+    "market": "TPEx",
+    "error": "TPEx 找不到行情欄位；官方格式可能已變更：{\"date\": \"20260925\", \"tables\": [{\"title\": \"上櫃股票行情\", \"subtitle\": \"上櫃家數: 0家&nbsp;&nbsp;&nbsp;總成交金額: 0元&nbsp;&nbsp;&nbsp;總成交股數: 0股&nbsp;&nbsp;&nbsp;總成交筆數: 0筆\", \"date\": \"115/09/25\", \"listedCompanies\": \"0\", \"totalTradingAmount\": \"0\", \"totalTradingShares\": \"0\", \"totalTranscations\": \"0\", \"totalCount\": 0, \""
   }
 ]

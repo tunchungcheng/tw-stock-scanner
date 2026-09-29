@@ -1,10 +1,10 @@
 {
   "summary": {
-    "published_signals": 62,
-    "entered_signals": 48,
-    "completed_10d": 36,
-    "win_rate_10d": 30.56,
-    "average_return_10d": -1.81,
+    "published_signals": 68,
+    "entered_signals": 50,
+    "completed_10d": 37,
+    "win_rate_10d": 32.43,
+    "average_return_10d": -1.69,
     "estimated_cost_pct": 0.7
   },
   "signals": [
@@ -229,6 +229,7 @@
       "return_1d": -2.43,
       "return_3d": -5.74,
       "return_5d": -7.16,
+      "return_10d": 2.61,
       "stop_hit_10d": false
     },
     {
@@ -1106,6 +1107,7 @@
       "stop_price": 204.88,
       "return_1d": -0.93,
       "return_3d": -1.38,
+      "return_5d": -4.34,
       "stop_hit_10d": false
     },
     {
@@ -1130,6 +1132,7 @@
       "stop_price": 50.5,
       "return_1d": 6.18,
       "return_3d": 6.55,
+      "return_5d": 6.55,
       "stop_hit_10d": false
     },
     {
@@ -1153,6 +1156,7 @@
       "stop_price": 599.43,
       "return_1d": 0.52,
       "return_3d": 5.1,
+      "return_5d": 4.19,
       "stop_hit_10d": false
     },
     {
@@ -1177,6 +1181,7 @@
       "stop_price": 57.84,
       "return_1d": -1.53,
       "return_3d": -3.37,
+      "return_5d": -3.53,
       "stop_hit_10d": false
     },
     {
@@ -1310,6 +1315,7 @@
       "entry_price": 71.5,
       "stop_price": 66.74,
       "return_1d": -3.36,
+      "return_3d": 5.45,
       "stop_hit_10d": false
     },
     {
@@ -1392,7 +1398,12 @@
         "產業相對強勢",
         "MA20 乖離 6%～9%（-1）"
       ],
-      "status": "pending"
+      "status": "entered",
+      "entry_date": "2026-09-29",
+      "entry_price": 72.4,
+      "stop_price": 68.07,
+      "return_1d": 4.13,
+      "stop_hit_10d": false
     },
     {
       "signal_date": "2026-09-24",
@@ -1411,6 +1422,119 @@
         "距 20 日高點不超過 5%",
         "產業相對強勢",
         "MA20 乖離 6%～9%（-1）"
+      ],
+      "status": "entered",
+      "entry_date": "2026-09-29",
+      "entry_price": 46.8,
+      "stop_price": 43.06,
+      "return_1d": -3.91,
+      "stop_hit_10d": false
+    },
+    {
+      "signal_date": "2026-09-29",
+      "market": "TWSE",
+      "stock_id": "2347",
+      "stock_name": "聯強",
+      "industry": "電子通路業",
+      "score": 9,
+      "reasons": [
+        "多頭均線排列",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "前日收斂、今日帶寬回升",
+        "距 20 日高點不超過 5%",
+        "產業相對強勢"
+      ],
+      "status": "pending"
+    },
+    {
+      "signal_date": "2026-09-29",
+      "market": "TWSE",
+      "stock_id": "4540",
+      "stock_name": "全球傳動",
+      "industry": "電機機械",
+      "score": 8,
+      "reasons": [
+        "多頭均線排列",
+        "KD 加速且 K < 80",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "突破 10 日高點",
+        "距 20 日高點不超過 5%"
+      ],
+      "status": "pending"
+    },
+    {
+      "signal_date": "2026-09-29",
+      "market": "TWSE",
+      "stock_id": "1708",
+      "stock_name": "東鹼",
+      "industry": "化學工業",
+      "score": 8,
+      "reasons": [
+        "多頭均線排列",
+        "KD 加速且 K < 80",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "前日收斂、今日帶寬回升",
+        "距 20 日高點不超過 5%"
+      ],
+      "status": "pending"
+    },
+    {
+      "signal_date": "2026-09-29",
+      "market": "TWSE",
+      "stock_id": "1773",
+      "stock_name": "勝一",
+      "industry": "化學工業",
+      "score": 8,
+      "reasons": [
+        "多頭均線排列",
+        "KD 加速且 K < 80",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "突破 10 日高點",
+        "距 20 日高點不超過 5%"
+      ],
+      "status": "pending"
+    },
+    {
+      "signal_date": "2026-09-29",
+      "market": "TWSE",
+      "stock_id": "6937",
+      "stock_name": "天虹",
+      "industry": "半導體業",
+      "score": 8,
+      "reasons": [
+        "多頭均線排列",
+        "KD 加速且 K < 80",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "距 20 日高點不超過 5%",
+        "產業相對強勢"
+      ],
+      "status": "pending"
+    },
+    {
+      "signal_date": "2026-09-29",
+      "market": "TWSE",
+      "stock_id": "3535",
+      "stock_name": "晶彩科",
+      "industry": "光電業",
+      "score": 8,
+      "reasons": [
+        "多頭均線排列",
+        "KD 加速且 K < 80",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "距 20 日高點不超過 5%",
+        "產業相對強勢"
       ],
       "status": "pending"
     }

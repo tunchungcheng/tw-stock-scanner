@@ -1,23 +1,23 @@
 [
   {
+    "date": "2026-06-01",
+    "market": "TPEx",
+    "error": "下載失敗：https://www.tpex.org.tw/www/zh-tw/afterTrading/dailyQuotes，IncompleteRead(417506 bytes read)"
+  },
+  {
     "date": "2026-06-19",
     "market": "TPEx",
     "error": "TPEx 找不到行情欄位；官方格式可能已變更：{\"date\": \"20260619\", \"tables\": [{\"title\": \"上櫃股票行情\", \"subtitle\": \"上櫃家數: 0家&nbsp;&nbsp;&nbsp;總成交金額: 0元&nbsp;&nbsp;&nbsp;總成交股數: 0股&nbsp;&nbsp;&nbsp;總成交筆數: 0筆\", \"date\": \"115/06/19\", \"listedCompanies\": \"0\", \"totalTradingAmount\": \"0\", \"totalTradingShares\": \"0\", \"totalTranscations\": \"0\", \"totalCount\": 0, \""
   },
   {
+    "date": "2026-06-25",
+    "market": "TPEx",
+    "error": "下載失敗：https://www.tpex.org.tw/www/zh-tw/afterTrading/dailyQuotes，The read operation timed out"
+  },
+  {
     "date": "2026-07-10",
     "market": "TPEx",
     "error": "TPEx 找不到行情欄位；官方格式可能已變更：{\"date\": \"20260710\", \"tables\": [{\"title\": \"上櫃股票行情\", \"subtitle\": \"上櫃家數: 0家&nbsp;&nbsp;&nbsp;總成交金額: 0元&nbsp;&nbsp;&nbsp;總成交股數: 0股&nbsp;&nbsp;&nbsp;總成交筆數: 0筆\", \"date\": \"115/07/10\", \"listedCompanies\": \"0\", \"totalTradingAmount\": \"0\", \"totalTradingShares\": \"0\", \"totalTranscations\": \"0\", \"totalCount\": 0, \""
-  },
-  {
-    "date": "2026-07-20",
-    "market": "TPEx",
-    "error": "下載失敗：https://www.tpex.org.tw/www/zh-tw/afterTrading/dailyQuotes，IncompleteRead(351970 bytes read)"
-  },
-  {
-    "date": "2026-07-23",
-    "market": "TPEx",
-    "error": "下載失敗：https://www.tpex.org.tw/www/zh-tw/afterTrading/dailyQuotes，IncompleteRead(483042 bytes read)"
   },
   {
     "date": "2026-09-25",
@@ -28,10 +28,5 @@
     "date": "2026-09-28",
     "market": "TPEx",
     "error": "TPEx 找不到行情欄位；官方格式可能已變更：{\"date\": \"20260928\", \"tables\": [{\"title\": \"上櫃股票行情\", \"subtitle\": \"上櫃家數: 0家&nbsp;&nbsp;&nbsp;總成交金額: 0元&nbsp;&nbsp;&nbsp;總成交股數: 0股&nbsp;&nbsp;&nbsp;總成交筆數: 0筆\", \"date\": \"115/09/28\", \"listedCompanies\": \"0\", \"totalTradingAmount\": \"0\", \"totalTradingShares\": \"0\", \"totalTranscations\": \"0\", \"totalCount\": 0, \""
-  },
-  {
-    "date": "2026-10-02",
-    "market": "TPEx",
-    "error": "TPEx 找不到行情欄位；官方格式可能已變更：{\"date\": \"20261002\", \"tables\": [{\"title\": \"上櫃股票行情\", \"subtitle\": \"上櫃家數: 0家&nbsp;&nbsp;&nbsp;總成交金額: 0元&nbsp;&nbsp;&nbsp;總成交股數: 0股&nbsp;&nbsp;&nbsp;總成交筆數: 0筆\", \"date\": \"115/10/02\", \"listedCompanies\": \"0\", \"totalTradingAmount\": \"0\", \"totalTradingShares\": \"0\", \"totalTranscations\": \"0\", \"totalCount\": 0, \""
   }
 ]

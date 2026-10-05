@@ -1,10 +1,10 @@
 {
   "summary": {
-    "published_signals": 110,
-    "entered_signals": 73,
-    "completed_10d": 39,
-    "win_rate_10d": 33.33,
-    "average_return_10d": -1.56,
+    "published_signals": 113,
+    "entered_signals": 82,
+    "completed_10d": 40,
+    "win_rate_10d": 35.0,
+    "average_return_10d": -1.38,
     "estimated_cost_pct": 0.7
   },
   "signals": [
@@ -538,6 +538,7 @@
       "return_3d": -3.36,
       "return_5d": -5.63,
       "return_10d": -7.8,
+      "return_20d": -6.22,
       "stop_hit_10d": false
     },
     {
@@ -563,6 +564,7 @@
       "return_3d": -3.52,
       "return_5d": -2.11,
       "return_10d": 0.71,
+      "return_20d": -2.42,
       "stop_hit_10d": false
     },
     {
@@ -588,6 +590,7 @@
       "return_3d": -2.76,
       "return_5d": -9.92,
       "return_10d": -10.6,
+      "return_20d": -12.39,
       "stop_hit_10d": false
     },
     {
@@ -630,6 +633,7 @@
       "return_3d": -1.01,
       "return_5d": -2.42,
       "return_10d": -5.56,
+      "return_20d": -6.5,
       "stop_hit_10d": false
     },
     {
@@ -671,6 +675,7 @@
       "return_3d": -1.74,
       "return_5d": -0.53,
       "return_10d": -0.53,
+      "return_20d": -0.7,
       "stop_hit_10d": false
     },
     {
@@ -719,6 +724,7 @@
       "return_3d": -1.53,
       "return_5d": -2.09,
       "return_10d": -1.81,
+      "return_20d": 0.96,
       "stop_hit_10d": false
     },
     {
@@ -743,6 +749,7 @@
       "return_3d": -4.37,
       "return_5d": -2.02,
       "return_10d": 0.33,
+      "return_20d": -3.49,
       "stop_hit_10d": false
     },
     {
@@ -767,6 +774,7 @@
       "return_3d": -1.18,
       "return_5d": -0.82,
       "return_10d": -4.41,
+      "return_20d": -6.2,
       "stop_hit_10d": false
     },
     {
@@ -791,6 +799,7 @@
       "return_3d": 0.62,
       "return_5d": 1.75,
       "return_10d": -0.7,
+      "return_20d": 10.24,
       "stop_hit_10d": false
     },
     {
@@ -815,6 +824,7 @@
       "return_3d": -3.26,
       "return_5d": -4.21,
       "return_10d": -7.73,
+      "return_20d": 6.33,
       "stop_hit_10d": false
     },
     {
@@ -839,6 +849,7 @@
       "return_3d": -2.21,
       "return_5d": -0.01,
       "return_10d": 11.25,
+      "return_20d": 42.16,
       "stop_hit_10d": false
     },
     {
@@ -863,6 +874,7 @@
       "return_3d": -2.58,
       "return_5d": -2.58,
       "return_10d": -4.47,
+      "return_20d": -5.67,
       "stop_hit_10d": false
     },
     {
@@ -887,6 +899,7 @@
       "return_3d": -5.33,
       "return_5d": -3.15,
       "return_10d": -3.15,
+      "return_20d": 17.01,
       "stop_hit_10d": false
     },
     {
@@ -911,6 +924,7 @@
       "return_3d": 0.23,
       "return_5d": -0.35,
       "return_10d": -2.68,
+      "return_20d": -3.96,
       "stop_hit_10d": false
     },
     {
@@ -935,6 +949,7 @@
       "return_3d": -3.94,
       "return_5d": -4.45,
       "return_10d": -4.14,
+      "return_20d": -8.91,
       "stop_hit_10d": false
     },
     {
@@ -959,6 +974,7 @@
       "return_3d": -1.45,
       "return_5d": -1.2,
       "return_10d": -0.95,
+      "return_20d": -3.7,
       "stop_hit_10d": false
     },
     {
@@ -983,6 +999,7 @@
       "return_3d": -3.79,
       "return_5d": -6.24,
       "return_10d": 2.65,
+      "return_20d": 3.17,
       "stop_hit_10d": false
     },
     {
@@ -1087,6 +1104,7 @@
       "return_1d": 1.53,
       "return_3d": 0.19,
       "return_5d": 4.21,
+      "return_10d": 5.55,
       "stop_hit_10d": false
     },
     {
@@ -1389,7 +1407,8 @@
       "return_1d": -2.18,
       "return_3d": -3.67,
       "return_5d": -4.82,
-      "stop_hit_10d": false
+      "stop_hit_10d": true,
+      "stop_return_pct": -6.14
     },
     {
       "signal_date": "2026-09-23",
@@ -1432,6 +1451,7 @@
       "stop_price": 68.07,
       "return_1d": 4.13,
       "return_3d": 1.51,
+      "return_5d": 0.4,
       "stop_hit_10d": false
     },
     {
@@ -1458,6 +1478,7 @@
       "stop_price": 43.06,
       "return_1d": -3.91,
       "return_3d": -1.34,
+      "return_5d": 5.82,
       "stop_hit_10d": false
     },
     {
@@ -1656,6 +1677,7 @@
       "entry_price": 762.0,
       "stop_price": 714.64,
       "return_1d": -1.09,
+      "return_3d": 2.97,
       "stop_hit_10d": false
     },
     {
@@ -1696,6 +1718,7 @@
       "entry_price": 102.0,
       "stop_price": 94.16,
       "return_1d": 4.2,
+      "return_3d": 6.65,
       "stop_hit_10d": false
     },
     {
@@ -1718,6 +1741,7 @@
       "entry_price": 2510.0,
       "stop_price": 2426.43,
       "return_1d": -0.7,
+      "return_3d": 1.89,
       "stop_hit_10d": false
     },
     {
@@ -2164,7 +2188,12 @@
         "距 20 日高點不超過 5%",
         "產業相對強勢"
       ],
-      "status": "pending"
+      "status": "entered",
+      "entry_date": "2026-10-05",
+      "entry_price": 143.5,
+      "stop_price": 131.79,
+      "return_1d": -3.14,
+      "stop_hit_10d": false
     },
     {
       "signal_date": "2026-10-02",
@@ -2183,7 +2212,7 @@
         "產業相對強勢",
         "MA20 乖離 6%～9%（-1）"
       ],
-      "status": "pending"
+      "status": "skipped_no_trigger"
     },
     {
       "signal_date": "2026-10-02",
@@ -2203,7 +2232,12 @@
         "產業相對強勢",
         "MA20 乖離 6%～9%（-1）"
       ],
-      "status": "pending"
+      "status": "entered",
+      "entry_date": "2026-10-05",
+      "entry_price": 172.0,
+      "stop_price": 162.04,
+      "return_1d": -0.99,
+      "stop_hit_10d": false
     },
     {
       "signal_date": "2026-10-02",
@@ -2221,7 +2255,7 @@
         "距 20 日高點不超過 5%",
         "產業相對強勢"
       ],
-      "status": "pending"
+      "status": "skipped_gap"
     },
     {
       "signal_date": "2026-10-02",
@@ -2238,7 +2272,7 @@
         "突破 10 日高點",
         "產業相對強勢"
       ],
-      "status": "pending"
+      "status": "skipped_gap"
     },
     {
       "signal_date": "2026-10-02",
@@ -2256,7 +2290,12 @@
         "距 20 日高點不超過 5%",
         "產業相對強勢"
       ],
-      "status": "pending"
+      "status": "entered",
+      "entry_date": "2026-10-05",
+      "entry_price": 130.0,
+      "stop_price": 119.61,
+      "return_1d": -3.39,
+      "stop_hit_10d": false
     },
     {
       "signal_date": "2026-10-02",
@@ -2273,7 +2312,12 @@
         "距 20 日高點不超過 5%",
         "產業相對強勢"
       ],
-      "status": "pending"
+      "status": "entered",
+      "entry_date": "2026-10-05",
+      "entry_price": 173.0,
+      "stop_price": 164.88,
+      "return_1d": 3.64,
+      "stop_hit_10d": false
     },
     {
       "signal_date": "2026-10-02",
@@ -2290,7 +2334,7 @@
         "前日收斂、今日帶寬回升",
         "距 20 日高點不超過 5%"
       ],
-      "status": "pending"
+      "status": "skipped_above_limit"
     },
     {
       "signal_date": "2026-10-02",
@@ -2308,7 +2352,12 @@
         "距 20 日高點不超過 5%",
         "產業相對強勢"
       ],
-      "status": "pending"
+      "status": "entered",
+      "entry_date": "2026-10-05",
+      "entry_price": 51.2,
+      "stop_price": 49.26,
+      "return_1d": 0.28,
+      "stop_hit_10d": false
     },
     {
       "signal_date": "2026-10-02",
@@ -2325,7 +2374,7 @@
         "距 20 日高點不超過 5%",
         "產業相對強勢"
       ],
-      "status": "pending"
+      "status": "skipped_no_trigger"
     },
     {
       "signal_date": "2026-10-02",
@@ -2341,7 +2390,12 @@
         "量比 1.2～2.5",
         "產業相對強勢"
       ],
-      "status": "pending"
+      "status": "entered",
+      "entry_date": "2026-10-05",
+      "entry_price": 1025.0,
+      "stop_price": 915.25,
+      "return_1d": 2.23,
+      "stop_hit_10d": false
     },
     {
       "signal_date": "2026-10-02",
@@ -2357,7 +2411,12 @@
         "突破 10 日高點",
         "產業相對強勢"
       ],
-      "status": "pending"
+      "status": "entered",
+      "entry_date": "2026-10-05",
+      "entry_price": 72.6,
+      "stop_price": 67.24,
+      "return_1d": -2.08,
+      "stop_hit_10d": false
     },
     {
       "signal_date": "2026-10-02",
@@ -2373,7 +2432,7 @@
         "前日收斂、今日帶寬回升",
         "產業相對強勢"
       ],
-      "status": "pending"
+      "status": "skipped_gap"
     },
     {
       "signal_date": "2026-10-02",
@@ -2389,7 +2448,12 @@
         "距 20 日高點不超過 5%",
         "產業相對強勢"
       ],
-      "status": "pending"
+      "status": "entered",
+      "entry_date": "2026-10-05",
+      "entry_price": 41.95,
+      "stop_price": 39.23,
+      "return_1d": 5.62,
+      "stop_hit_10d": false
     },
     {
       "signal_date": "2026-10-02",
@@ -2406,7 +2470,7 @@
         "突破 10 日高點",
         "產業相對強勢"
       ],
-      "status": "pending"
+      "status": "skipped_gap"
     },
     {
       "signal_date": "2026-10-02",
@@ -2423,6 +2487,65 @@
         "距 20 日高點不超過 5%",
         "產業相對強勢",
         "MA20 乖離 6%～9%（-1）"
+      ],
+      "status": "entered",
+      "entry_date": "2026-10-05",
+      "entry_price": 47.9,
+      "stop_price": 43.32,
+      "return_1d": 3.37,
+      "stop_hit_10d": false
+    },
+    {
+      "signal_date": "2026-10-05",
+      "market": "TWSE",
+      "stock_id": "2467",
+      "stock_name": "志聖",
+      "industry": "電子零組件業",
+      "score": 8,
+      "reasons": [
+        "多頭均線排列",
+        "KD 加速且 K < 80",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "突破 10 日高點",
+        "產業相對強勢"
+      ],
+      "status": "pending"
+    },
+    {
+      "signal_date": "2026-10-05",
+      "market": "TWSE",
+      "stock_id": "3715",
+      "stock_name": "定穎投控",
+      "industry": "電子零組件業",
+      "score": 8,
+      "reasons": [
+        "多頭均線排列",
+        "KD 加速且 K < 80",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "突破 10 日高點",
+        "距 20 日高點不超過 5%",
+        "產業相對強勢",
+        "MA20 乖離 6%～9%（-1）"
+      ],
+      "status": "pending"
+    },
+    {
+      "signal_date": "2026-10-05",
+      "market": "TWSE",
+      "stock_id": "2375",
+      "stock_name": "凱美",
+      "industry": "電子零組件業",
+      "score": 8,
+      "reasons": [
+        "多頭均線排列",
+        "KD 加速且 K < 80",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "距 20 日高點不超過 5%",
+        "產業相對強勢"
       ],
       "status": "pending"
     }

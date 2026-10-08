@@ -1,22 +1,16 @@
-name: 台股每日掃描與網頁發布
+name: 台股每日掃描
 
 on:
-  push:
-    branches: [main]
-    paths-ignore:
-      - "docs/data/**"
   schedule:
     - cron: "30 10 * * 1-5"
   workflow_dispatch:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 concurrency:
-  group: tw-stock-scanner-pages
-  cancel-in-progress: true
+  group: tw-stock-scanner-scan
+  cancel-in-progress: false
 
 jobs:
   scan:
@@ -51,22 +45,3 @@ jobs:
           else
             echo "沒有新的結果需要提交"
           fi
-
-      - name: 設定 Pages
-        uses: actions/configure-pages@v5
-
-      - name: 上傳網站
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: docs
-
-  deploy:
-    needs: scan
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: 發布 GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v5

@@ -1,13 +1,11 @@
 const state = {
   data: { setup: [], meta: {} },
-  query: "",
 };
 
 const els = {
   body: document.querySelector("#result-body"),
   empty: document.querySelector("#empty-state"),
   dateSelect: document.querySelector("#date-select"),
-  search: document.querySelector("#search-input"),
 };
 
 const number = (value, digits = 2) =>
@@ -46,11 +44,7 @@ function updateSummary() {
 }
 
 function visibleRows() {
-  const query = state.query.trim().toLowerCase();
-  const rows = state.data.setup || [];
-  return query
-    ? rows.filter((row) => `${row.stock_id} ${row.stock_name} ${row.industry || "未分類"}`.toLowerCase().includes(query))
-    : rows;
+  return state.data.setup || [];
 }
 
 function cell(label, value, className = "") {
@@ -75,7 +69,6 @@ function render() {
       ${cell("K / D", `${number(row.k, 1)} / ${number(row.d, 1)}`)}
       ${cell("MA20 乖離", signed(row.ma20_deviation_pct), Number(row.ma20_deviation_pct) > 6 ? "warning" : "")}
       ${cell("距高點", signed(row.distance_to_high20_pct))}
-      ${cell("交易計畫", `<span class="trade-plan"><strong>突破 ${number(row.entry_trigger)}</strong><span>上限 ${number(row.max_next_open)} · 取消 ${number(row.cancel_below)} · 停損 ${number(row.initial_stop_reference)}</span></span>`)}
       ${cell("入選原因", (row.reasons || []).map((reason) => `<span class="tag">${escapeHtml(reason)}</span>`).join(""))}
     </tr>
   `).join("");
@@ -129,11 +122,6 @@ async function loadDates() {
     });
   } catch (_) {}
 }
-
-els.search?.addEventListener("input", (event) => {
-  state.query = event.target.value;
-  render();
-});
 
 els.dateSelect?.addEventListener("change", (event) => {
   const value = event.target.value;

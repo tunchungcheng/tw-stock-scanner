@@ -775,23 +775,26 @@ def records_for_web(frame: pd.DataFrame, limit: int) -> list[dict[str, object]]:
 
 
 def track_archived_signals(prices: pd.DataFrame) -> dict[str, object]:
-    """用實際後續行情追蹤已發布訊號；不回填未曾發布的歷史候選。"""
+    """以可實際執行的進場／停損規則追蹤已發布訊號，避免回測使用錯誤的日期。"""
     tracked: list[dict[str, object]] = []
     grouped_prices = {
-        key: rows.sort_values("trade_date")
+        key: rows.sort_values("trade_date").reset_index(drop=True)
         for key, rows in prices.groupby(["market", "stock_id"])
     }
+
     for path in sorted(ARCHIVE_DIR.glob("*.json")):
         try:
             payload = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError):
             continue
+
         signal_date = pd.Timestamp(payload.get("meta", {}).get("trade_date"))
         for signal in payload.get("setup", []):
             key = (signal.get("market"), signal.get("stock_id"))
             history = grouped_prices.get(key)
             if history is None:
                 continue
+
             future = history[history["trade_date"] > signal_date].reset_index(drop=True)
             record: dict[str, object] = {
                 "signal_date": signal_date.strftime("%Y-%m-%d"),
@@ -807,19 +810,21 @@ def track_archived_signals(prices: pd.DataFrame) -> dict[str, object]:
                 tracked.append(record)
                 continue
 
-            day = future.iloc[0]
-            trigger = float(signal.get("entry_trigger") or signal.get("close") or day["open"])
+            entry_day = future.iloc[0]
+            trigger = float(signal.get("entry_trigger") or signal.get("close") or entry_day["open"])
             max_entry = float(signal.get("max_next_open") or trigger * 1.03)
             stop = float(signal.get("initial_stop_reference") or 0)
             cancel_below = float(signal.get("cancel_below") or stop)
-            open_price = float(day["open"])
+            open_price = float(entry_day["open"])
+
             if open_price > max_entry:
                 record["status"] = "skipped_gap"
             elif open_price < cancel_below:
                 record["status"] = "skipped_weak_open"
-            elif float(day["high"]) < trigger:
+            elif float(entry_day["high"]) < trigger:
                 record["status"] = "skipped_no_trigger"
             else:
+                # 觸發後以 trigger 成交；若開盤已高於 trigger，則以開盤價成交。
                 entry = max(open_price, trigger)
                 if entry > max_entry:
                     record["status"] = "skipped_above_limit"
@@ -827,41 +832,69 @@ def track_archived_signals(prices: pd.DataFrame) -> dict[str, object]:
                     record.update(
                         {
                             "status": "entered",
-                            "entry_date": pd.Timestamp(day["trade_date"]).strftime("%Y-%m-%d"),
+                            "entry_date": pd.Timestamp(entry_day["trade_date"]).strftime("%Y-%m-%d"),
                             "entry_price": finite(entry),
                             "stop_price": finite(stop),
                         }
                     )
+
+                    # 交易日定義：entry day = day 0，因此 1D 是下一個交易日收盤，
+                    # 10D 是進場後第 10 個交易日收盤。不能把進場日當成 1D。
+                    stop_hit_index: int | None = None
+                    stop_fill: float | None = None
+
+                    if stop > 0:
+                        for index, day in future.iterrows():
+                            if float(day["low"]) <= stop:
+                                stop_hit_index = int(index)
+                                stop_fill = min(float(day["open"]), stop)
+                                break
+
                     for holding_days in SIGNAL_TRACKING_DAYS:
-                        if len(future) >= holding_days:
-                            exit_close = float(future.iloc[holding_days - 1]["close"])
-                            gross = (exit_close / entry - 1) * 100
+                        target_index = holding_days
+                        if len(future) > target_index:
+                            # 若停損在目標日以前或當天觸發，實際報酬應以停損成交價計算，
+                            # 而不是事後拿第 N 天收盤價假設仍持有。
+                            if stop_hit_index is not None and stop_hit_index <= target_index:
+                                exit_price = float(stop_fill)
+                                exit_reason = "stop"
+                            else:
+                                exit_price = float(future.iloc[target_index]["close"])
+                                exit_reason = "time"
+                            gross = (exit_price / entry - 1) * 100
                             record[f"return_{holding_days}d"] = finite(
                                 gross - ESTIMATED_ROUND_TRIP_COST_PCT
                             )
-                    first_ten = future.iloc[:10]
-                    if stop > 0 and bool((first_ten["low"] <= stop).any()):
-                        stop_day = first_ten[first_ten["low"] <= stop].iloc[0]
-                        stop_fill = min(float(stop_day["open"]), stop)
+                            record[f"exit_{holding_days}d"] = exit_reason
+
+                    if stop_hit_index is not None and stop_hit_index <= 10:
+                        stop_day = future.iloc[stop_hit_index]
                         record["stop_hit_10d"] = True
+                        record["stop_date"] = pd.Timestamp(stop_day["trade_date"]).strftime("%Y-%m-%d")
                         record["stop_return_pct"] = finite(
-                            (stop_fill / entry - 1) * 100 - ESTIMATED_ROUND_TRIP_COST_PCT
+                            (float(stop_fill) / entry - 1) * 100
+                            - ESTIMATED_ROUND_TRIP_COST_PCT
                         )
                     else:
                         record["stop_hit_10d"] = False
+
             tracked.append(record)
 
     completed_10d = [
-        row for row in tracked if row.get("status") == "entered" and row.get("return_10d") is not None
+        row
+        for row in tracked
+        if row.get("status") == "entered" and row.get("return_10d") is not None
     ]
     returns_10d = [float(row["return_10d"]) for row in completed_10d]
     summary = {
         "published_signals": len(tracked),
         "entered_signals": sum(row.get("status") == "entered" for row in tracked),
         "completed_10d": len(completed_10d),
-        "win_rate_10d": finite(
-            sum(value > 0 for value in returns_10d) / len(returns_10d) * 100
-        ) if returns_10d else None,
+        "win_rate_10d": (
+            finite(sum(value > 0 for value in returns_10d) / len(returns_10d) * 100)
+            if returns_10d
+            else None
+        ),
         "average_return_10d": finite(np.mean(returns_10d)) if returns_10d else None,
         "estimated_cost_pct": ESTIMATED_ROUND_TRIP_COST_PCT,
     }

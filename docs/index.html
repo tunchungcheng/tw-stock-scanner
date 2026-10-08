@@ -2,10 +2,10 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="台股動能蓄勢股票每日掃描結果">
   <title>台股動能雷達</title>
-  <link rel="stylesheet" href="styles.css?v=20260922-1">
+  <link rel="stylesheet" href="styles.css?v=20261008-1">
 </head>
 <body>
   <main class="shell">
@@ -22,16 +22,11 @@
       </div>
     </header>
 
-    <section class="summary" aria-label="市場摘要">
+    <section class="summary" aria-label="掃描摘要">
       <article class="summary-card primary">
         <span>資料交易日</span>
         <strong id="trade-date">—</strong>
         <small id="generated-at">等待資料</small>
-      </article>
-      <article class="summary-card">
-        <span>大盤狀態</span>
-        <strong id="market-state">—</strong>
-        <small id="market-return">TAIEX 5 日報酬 —</small>
       </article>
       <article class="summary-card">
         <span>蓄勢名單</span>
@@ -56,7 +51,6 @@
           <ul class="rules compact">
             <li><span>20 日平均成交額至少 3,000 萬元</span></li>
             <li><span>月營收 YoY ≥ 30%，累計 YoY ≥ 15%</span></li>
-            <li><span>記錄營收保守可用日，供歷史驗證防止未來函數</span></li>
             <li><span>量比至少 1.0 倍</span></li>
             <li><span>尚未突破前 20 日最高價</span></li>
             <li><span>未觸發任一過熱排除條件</span></li>
@@ -73,7 +67,6 @@
             <li><strong>0～1</strong><span>產業：產業寬度 ≥ 55%，且 20 日報酬優於所屬市場</span></li>
             <li><strong>-1</strong><span>MA20 正乖離超過 6%</span></li>
           </ul>
-          <p>上市與上櫃分開判斷行情；同組訊號不重複灌分。</p>
         </section>
         <section>
           <h2>排除過熱</h2>
@@ -96,18 +89,12 @@
       <div class="toolbar">
         <div class="list-heading">
           <strong>蓄勢名單</strong>
-          <span>依分數、相對強勢與距高點排序</span>
+          <span>固定依掃描分數、相對強勢與距高點排序</span>
         </div>
         <div class="tools">
-          <label class="reason-sort">
-            <span class="sr-only">依入選原因排序</span>
-            <select id="reason-sort" aria-label="依入選原因排序">
-              <option value="">依入選原因排序</option>
-            </select>
-          </label>
           <label class="search">
             <span class="sr-only">搜尋代號、名稱或產業</span>
-            <input id="search-input" type="search" placeholder="搜尋代號、名稱或產業">
+            <input id="search-input" type="search" placeholder="搜尋代號、名稱或產業" autocomplete="off">
           </label>
           <a class="download" id="csv-link" href="data/setup_latest.csv" download>下載 CSV</a>
         </div>
@@ -117,22 +104,21 @@
         <table>
           <thead>
             <tr>
-              <th data-sort="rank">排名</th>
-              <th data-sort="stock_id">股票</th>
-              <th data-sort="industry">產業</th>
-              <th data-sort="market_regime">市場</th>
-              <th data-sort="revenue_yoy">月營收 YoY</th>
-              <th data-sort="score">分數</th>
-              <th data-sort="close">收盤</th>
-              <th data-sort="pct_change">當日</th>
-              <th data-sort="return_5d">5 日</th>
-              <th data-sort="return_20d">20 日</th>
-              <th data-sort="volume_ratio">量比</th>
-              <th data-sort="k">K / D</th>
-              <th data-sort="ma20_deviation_pct">MA20 乖離</th>
-              <th data-sort="distance_to_high20_pct">距高點</th>
+              <th>排名</th>
+              <th>股票</th>
+              <th>產業</th>
+              <th>月營收 YoY</th>
+              <th>分數</th>
+              <th>收盤</th>
+              <th>當日</th>
+              <th>5 日</th>
+              <th>20 日</th>
+              <th>量比</th>
+              <th>K / D</th>
+              <th>MA20 乖離</th>
+              <th>距高點</th>
               <th>交易計畫</th>
-              <th data-sort="reasons">入選原因</th>
+              <th>入選原因</th>
             </tr>
           </thead>
           <tbody id="result-body"></tbody>
@@ -144,24 +130,11 @@
       </div>
     </section>
 
-    <section class="ai-research" aria-labelledby="ai-research-title">
-      <div class="ai-research-heading">
-        <div>
-          <p class="eyebrow">AI VALUATION RESEARCH</p>
-          <h2 id="ai-research-title">Peter Lynch 估值研究提示詞</h2>
-          <p>自動帶入目前畫面的篩選名單，要求 AI 依低估程度排序、估算合理價，並列出加碼、持有與賣出條件。</p>
-        </div>
-        <button class="copy-prompt" id="copy-ai-prompt" type="button">複製提示詞</button>
-      </div>
-      <textarea id="ai-prompt" class="ai-prompt" rows="18" spellcheck="false" aria-label="Peter Lynch AI 估值研究提示詞"></textarea>
-      <small id="ai-prompt-status">載入篩選結果後會自動產生提示詞。</small>
-    </section>
-
     <footer>
       <span id="data-note">收盤後訊號，僅供研究。</span>
       <span>價格未還原 · 下個交易日才可執行</span>
     </footer>
   </main>
-  <script src="app.js?v=20260922-1" defer></script>
+  <script src="app.js?v=20261008-1" defer></script>
 </body>
 </html>

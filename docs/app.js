@@ -6,6 +6,10 @@ const els = {
   body: document.querySelector("#result-body"),
   empty: document.querySelector("#empty-state"),
   dateSelect: document.querySelector("#date-select"),
+  search: document.querySelector("#stock-search"),
+  industry: document.querySelector("#industry-filter"),
+  clearFilters: document.querySelector("#clear-filters"),
+  resultCount: document.querySelector("#result-count"),
 };
 
 const number = (value, digits = 2) =>
@@ -44,7 +48,37 @@ function updateSummary() {
 }
 
 function visibleRows() {
-  return state.data.setup || [];
+  const rows = state.data.setup || [];
+  const query = (els.search?.value || "").trim().toLocaleLowerCase("zh-TW");
+  const industry = els.industry?.value || "";
+  return rows.filter((row) => {
+    const matchesQuery = !query || [row.stock_id, row.stock_name, row.industry]
+      .some((value) => String(value ?? "").toLocaleLowerCase("zh-TW").includes(query));
+    const matchesIndustry = !industry || String(row.industry || "未分類") === industry;
+    return matchesQuery && matchesIndustry;
+  });
+}
+
+function updateFilterOptions() {
+  if (!els.industry) return;
+  const selected = els.industry.value;
+  const industries = [...new Set((state.data.setup || []).map((row) => row.industry || "未分類"))]
+    .sort((a, b) => a.localeCompare(b, "zh-TW"));
+  els.industry.innerHTML = '<option value="">所有產業</option>';
+  industries.forEach((industry) => {
+    const option = document.createElement("option");
+    option.value = industry;
+    option.textContent = industry;
+    els.industry.append(option);
+  });
+  if (industries.includes(selected)) els.industry.value = selected;
+}
+
+function updateResultCount(visible, total) {
+  if (!els.resultCount) return;
+  els.resultCount.textContent = visible === total
+    ? `共 ${total} 檔`
+    : `顯示 ${visible} / ${total} 檔`;
 }
 
 function cell(label, value, className = "") {
@@ -53,7 +87,9 @@ function cell(label, value, className = "") {
 
 function render() {
   if (!els.body || !els.empty) return;
+  const allRows = state.data.setup || [];
   const rows = visibleRows();
+  updateResultCount(rows.length, allRows.length);
   els.body.innerHTML = rows.map((row) => `
     <tr>
       ${cell("排名", row.rank, "rank")}
@@ -73,6 +109,17 @@ function render() {
     </tr>
   `).join("");
   els.empty.hidden = rows.length > 0;
+  const title = els.empty.querySelector("strong");
+  const detail = els.empty.querySelector("span");
+  if (title && detail) {
+    if (allRows.length === 0) {
+      title.textContent = "目前沒有符合條件的股票";
+      detail.textContent = "嚴格條件下出現空名單是正常結果。";
+    } else {
+      title.textContent = "找不到符合條件的股票";
+      detail.textContent = "請調整搜尋關鍵字或產業篩選。";
+    }
+  }
 }
 
 async function loadPerformance() {
@@ -99,6 +146,7 @@ async function loadData(path = "data/latest.json") {
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     state.data = await response.json();
     updateSummary();
+    updateFilterOptions();
     render();
   } catch (error) {
     els.empty.hidden = false;
@@ -126,6 +174,14 @@ async function loadDates() {
 els.dateSelect?.addEventListener("change", (event) => {
   const value = event.target.value;
   loadData(value === "latest" ? "data/latest.json" : `data/archive/${value}.json`);
+});
+
+els.search?.addEventListener("input", render);
+els.industry?.addEventListener("change", render);
+els.clearFilters?.addEventListener("click", () => {
+  if (els.search) els.search.value = "";
+  if (els.industry) els.industry.value = "";
+  render();
 });
 
 loadDates();

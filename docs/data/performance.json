@@ -1,10 +1,10 @@
 {
   "summary": {
-    "published_signals": 137,
-    "entered_signals": 87,
-    "completed_10d": 45,
-    "win_rate_10d": 37.78,
-    "average_return_10d": -0.24,
+    "published_signals": 150,
+    "entered_signals": 89,
+    "completed_10d": 46,
+    "win_rate_10d": 36.96,
+    "average_return_10d": -0.26,
     "estimated_cost_pct": 0.7
   },
   "signals": [
@@ -1587,6 +1587,8 @@
       "exit_3d": "time",
       "return_5d": 5.59,
       "exit_5d": "time",
+      "return_10d": -0.98,
+      "exit_10d": "time",
       "stop_hit_10d": false
     },
     {
@@ -2046,6 +2048,8 @@
       "exit_1d": "time",
       "return_3d": -0.29,
       "exit_3d": "time",
+      "return_5d": 1.89,
+      "exit_5d": "time",
       "stop_hit_10d": false
     },
     {
@@ -2072,6 +2076,8 @@
       "exit_1d": "time",
       "return_3d": 5.63,
       "exit_3d": "time",
+      "return_5d": 5.63,
+      "exit_5d": "time",
       "stop_hit_10d": false
     },
     {
@@ -2099,6 +2105,8 @@
       "exit_1d": "time",
       "return_3d": 1.74,
       "exit_3d": "time",
+      "return_5d": 3.86,
+      "exit_5d": "time",
       "stop_hit_10d": false
     },
     {
@@ -2126,6 +2134,8 @@
       "exit_1d": "time",
       "return_3d": 27.06,
       "exit_3d": "time",
+      "return_5d": 24.08,
+      "exit_5d": "time",
       "stop_hit_10d": false
     },
     {
@@ -2153,6 +2163,8 @@
       "exit_1d": "time",
       "return_3d": 6.42,
       "exit_3d": "time",
+      "return_5d": 4.6,
+      "exit_5d": "time",
       "stop_hit_10d": false
     },
     {
@@ -2179,6 +2191,8 @@
       "exit_1d": "time",
       "return_3d": -1.63,
       "exit_3d": "time",
+      "return_5d": 2.64,
+      "exit_5d": "time",
       "stop_hit_10d": false
     },
     {
@@ -2220,6 +2234,8 @@
       "exit_1d": "time",
       "return_3d": -3.17,
       "exit_3d": "time",
+      "return_5d": -0.82,
+      "exit_5d": "time",
       "stop_hit_10d": false
     },
     {
@@ -2247,6 +2263,8 @@
       "exit_1d": "time",
       "return_3d": 5.41,
       "exit_3d": "time",
+      "return_5d": 2.63,
+      "exit_5d": "time",
       "stop_hit_10d": false
     },
     {
@@ -2272,6 +2290,8 @@
       "exit_1d": "time",
       "return_3d": 1.77,
       "exit_3d": "time",
+      "return_5d": -3.04,
+      "exit_5d": "time",
       "stop_hit_10d": false
     },
     {
@@ -2297,6 +2317,8 @@
       "exit_1d": "time",
       "return_3d": -0.37,
       "exit_3d": "time",
+      "return_5d": -5.15,
+      "exit_5d": "time",
       "stop_hit_10d": false
     },
     {
@@ -2320,6 +2342,8 @@
       "exit_1d": "time",
       "return_3d": 6.16,
       "exit_3d": "time",
+      "return_5d": 2.73,
+      "exit_5d": "time",
       "stop_hit_10d": false
     },
     {
@@ -2345,6 +2369,8 @@
       "exit_1d": "time",
       "return_3d": -1.94,
       "exit_3d": "time",
+      "return_5d": -0.47,
+      "exit_5d": "time",
       "stop_hit_10d": false
     },
     {
@@ -2371,6 +2397,8 @@
       "exit_1d": "stop",
       "return_3d": -4.59,
       "exit_3d": "stop",
+      "return_5d": -4.59,
+      "exit_5d": "stop",
       "stop_hit_10d": true,
       "stop_date": "2026-10-02",
       "stop_return_pct": -4.59
@@ -2434,6 +2462,8 @@
       "exit_1d": "time",
       "return_3d": -0.28,
       "exit_3d": "time",
+      "return_5d": -3.63,
+      "exit_5d": "time",
       "stop_hit_10d": false
     },
     {
@@ -2459,6 +2489,8 @@
       "exit_1d": "time",
       "return_3d": -2.4,
       "exit_3d": "time",
+      "return_5d": -0.7,
+      "exit_5d": "time",
       "stop_hit_10d": false
     },
     {
@@ -2867,6 +2899,8 @@
       "stop_price": 546.57,
       "return_1d": -3.77,
       "exit_1d": "time",
+      "return_3d": -0.19,
+      "exit_3d": "time",
       "stop_hit_10d": false
     },
     {
@@ -2892,6 +2926,8 @@
       "stop_price": 125.5,
       "return_1d": 1.51,
       "exit_1d": "time",
+      "return_3d": 1.51,
+      "exit_3d": "time",
       "stop_hit_10d": false
     },
     {
@@ -2932,6 +2968,8 @@
       "entry_date": "2026-10-08",
       "entry_price": 275.0,
       "stop_price": 256.12,
+      "return_1d": 1.66,
+      "exit_1d": "time",
       "stop_hit_10d": false
     },
     {
@@ -3056,6 +3094,8 @@
       "entry_date": "2026-10-08",
       "entry_price": 182.5,
       "stop_price": 177.95,
+      "return_1d": -0.15,
+      "exit_1d": "time",
       "stop_hit_10d": false
     },
     {
@@ -3076,6 +3116,8 @@
       "entry_date": "2026-10-08",
       "entry_price": 39.15,
       "stop_price": 38.04,
+      "return_1d": -0.32,
+      "exit_1d": "time",
       "stop_hit_10d": false
     },
     {
@@ -3142,7 +3184,7 @@
         "距 20 日高點不超過 5%",
         "產業相對強勢"
       ],
-      "status": "pending"
+      "status": "skipped_no_trigger"
     },
     {
       "signal_date": "2026-10-08",
@@ -3161,7 +3203,11 @@
         "距 20 日高點不超過 5%",
         "產業相對強勢"
       ],
-      "status": "pending"
+      "status": "entered",
+      "entry_date": "2026-10-12",
+      "entry_price": 84.4,
+      "stop_price": 82.48,
+      "stop_hit_10d": false
     },
     {
       "signal_date": "2026-10-08",
@@ -3179,7 +3225,7 @@
         "距 20 日高點不超過 5%",
         "產業相對強勢"
       ],
-      "status": "pending"
+      "status": "skipped_gap"
     },
     {
       "signal_date": "2026-10-08",
@@ -3198,7 +3244,11 @@
         "前日收斂、今日帶寬回升",
         "距 20 日高點不超過 5%"
       ],
-      "status": "pending"
+      "status": "entered",
+      "entry_date": "2026-10-12",
+      "entry_price": 40.2,
+      "stop_price": 38.46,
+      "stop_hit_10d": false
     },
     {
       "signal_date": "2026-10-08",
@@ -3216,7 +3266,7 @@
         "前日收斂、今日帶寬回升",
         "產業相對強勢"
       ],
-      "status": "pending"
+      "status": "skipped_no_trigger"
     },
     {
       "signal_date": "2026-10-08",
@@ -3233,7 +3283,7 @@
         "距 20 日高點不超過 5%",
         "產業相對強勢"
       ],
-      "status": "pending"
+      "status": "skipped_no_trigger"
     },
     {
       "signal_date": "2026-10-08",
@@ -3252,7 +3302,7 @@
         "產業相對強勢",
         "MA20 乖離 6%～9%（-1）"
       ],
-      "status": "pending"
+      "status": "skipped_no_trigger"
     },
     {
       "signal_date": "2026-10-08",
@@ -3270,7 +3320,7 @@
         "距 20 日高點不超過 5%",
         "產業相對強勢"
       ],
-      "status": "pending"
+      "status": "skipped_no_trigger"
     },
     {
       "signal_date": "2026-10-08",
@@ -3288,7 +3338,7 @@
         "距 20 日高點不超過 5%",
         "產業相對強勢"
       ],
-      "status": "pending"
+      "status": "skipped_weak_open"
     },
     {
       "signal_date": "2026-10-08",
@@ -3304,7 +3354,7 @@
         "量比 1.2～2.5",
         "距 20 日高點不超過 5%"
       ],
-      "status": "pending"
+      "status": "skipped_no_trigger"
     },
     {
       "signal_date": "2026-10-08",
@@ -3320,7 +3370,7 @@
         "突破 10 日高點",
         "產業相對強勢"
       ],
-      "status": "pending"
+      "status": "skipped_no_trigger"
     },
     {
       "signal_date": "2026-10-08",
@@ -3335,6 +3385,239 @@
         "量比 1.2～2.5",
         "前日收斂、今日帶寬回升",
         "產業相對強勢"
+      ],
+      "status": "skipped_weak_open"
+    },
+    {
+      "signal_date": "2026-10-12",
+      "market": "TWSE",
+      "stock_id": "2428",
+      "stock_name": "興勤",
+      "industry": "電子零組件業",
+      "score": 8,
+      "reasons": [
+        "多頭均線排列",
+        "KD 加速且 K < 80",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "前日收斂、今日帶寬回升",
+        "距 20 日高點不超過 5%",
+        "產業相對強勢",
+        "MA20 乖離 6%～9%（-1）"
+      ],
+      "status": "pending"
+    },
+    {
+      "signal_date": "2026-10-12",
+      "market": "TWSE",
+      "stock_id": "8131",
+      "stock_name": "福懋科",
+      "industry": "半導體業",
+      "score": 8,
+      "reasons": [
+        "多頭均線排列",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "前日收斂、今日帶寬回升",
+        "距 20 日高點不超過 5%",
+        "產業相對強勢",
+        "MA20 乖離 6%～9%（-1）"
+      ],
+      "status": "pending"
+    },
+    {
+      "signal_date": "2026-10-12",
+      "market": "TWSE",
+      "stock_id": "2302",
+      "stock_name": "麗正",
+      "industry": "半導體業",
+      "score": 8,
+      "reasons": [
+        "多頭均線排列",
+        "KD 加速且 K < 80",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "前日收斂、今日帶寬回升",
+        "距 20 日高點不超過 5%",
+        "產業相對強勢",
+        "MA20 乖離 6%～9%（-1）"
+      ],
+      "status": "pending"
+    },
+    {
+      "signal_date": "2026-10-12",
+      "market": "TWSE",
+      "stock_id": "2543",
+      "stock_name": "皇昌",
+      "industry": "建材營造",
+      "score": 8,
+      "reasons": [
+        "多頭均線排列",
+        "KD 加速且 K < 80",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "前日收斂、今日帶寬回升",
+        "距 20 日高點不超過 5%"
+      ],
+      "status": "pending"
+    },
+    {
+      "signal_date": "2026-10-12",
+      "market": "TWSE",
+      "stock_id": "8070",
+      "stock_name": "長華*",
+      "industry": "電子通路業",
+      "score": 8,
+      "reasons": [
+        "多頭均線排列",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "距 20 日高點不超過 5%",
+        "產業相對強勢"
+      ],
+      "status": "pending"
+    },
+    {
+      "signal_date": "2026-10-12",
+      "market": "TWSE",
+      "stock_id": "3036",
+      "stock_name": "文曄",
+      "industry": "電子通路業",
+      "score": 8,
+      "reasons": [
+        "多頭均線排列",
+        "5 日漲幅 1%～8%",
+        "量比 1.2～2.5",
+        "前日收斂、今日帶寬回升",
+        "距 20 日高點不超過 5%",
+        "產業相對強勢"
+      ],
+      "status": "pending"
+    },
+    {
+      "signal_date": "2026-10-12",
+      "market": "TWSE",
+      "stock_id": "6209",
+      "stock_name": "今國光",
+      "industry": "光電業",
+      "score": 7,
+      "reasons": [
+        "多頭均線排列",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "距 20 日高點不超過 5%",
+        "產業相對強勢",
+        "MA20 乖離 6%～9%（-1）"
+      ],
+      "status": "pending"
+    },
+    {
+      "signal_date": "2026-10-12",
+      "market": "TWSE",
+      "stock_id": "3048",
+      "stock_name": "益登",
+      "industry": "電子通路業",
+      "score": 7,
+      "reasons": [
+        "多頭均線排列",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "距 20 日高點不超過 5%",
+        "產業相對強勢",
+        "MA20 乖離 6%～9%（-1）"
+      ],
+      "status": "pending"
+    },
+    {
+      "signal_date": "2026-10-12",
+      "market": "TWSE",
+      "stock_id": "2009",
+      "stock_name": "第一銅",
+      "industry": "鋼鐵工業",
+      "score": 7,
+      "reasons": [
+        "多頭均線排列",
+        "KD 加速且 K < 80",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "距 20 日高點不超過 5%"
+      ],
+      "status": "pending"
+    },
+    {
+      "signal_date": "2026-10-12",
+      "market": "TWSE",
+      "stock_id": "2467",
+      "stock_name": "志聖",
+      "industry": "電子零組件業",
+      "score": 6,
+      "reasons": [
+        "多頭均線排列",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "突破 10 日高點",
+        "距 20 日高點不超過 5%",
+        "產業相對強勢",
+        "MA20 乖離 6%～9%（-1）"
+      ],
+      "status": "pending"
+    },
+    {
+      "signal_date": "2026-10-12",
+      "market": "TWSE",
+      "stock_id": "5522",
+      "stock_name": "遠雄",
+      "industry": "建材營造",
+      "score": 6,
+      "reasons": [
+        "KD 加速且 K < 80",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "量比 1.2～2.5",
+        "突破 10 日高點",
+        "距 20 日高點不超過 5%"
+      ],
+      "status": "pending"
+    },
+    {
+      "signal_date": "2026-10-12",
+      "market": "TWSE",
+      "stock_id": "2441",
+      "stock_name": "超豐",
+      "industry": "半導體業",
+      "score": 6,
+      "reasons": [
+        "多頭均線排列",
+        "KD 加速且 K < 80",
+        "5 日漲幅 1%～8%",
+        "5 日相對強勢",
+        "前日收斂、今日帶寬回升",
+        "距 20 日高點不超過 5%",
+        "產業相對強勢",
+        "MA20 乖離 6%～9%（-1）"
+      ],
+      "status": "pending"
+    },
+    {
+      "signal_date": "2026-10-12",
+      "market": "TWSE",
+      "stock_id": "3706",
+      "stock_name": "神達",
+      "industry": "電腦及週邊設備業",
+      "score": 6,
+      "reasons": [
+        "多頭均線排列",
+        "5 日漲幅 1%～8%",
+        "量比 1.2～2.5",
+        "距 20 日高點不超過 5%"
       ],
       "status": "pending"
     }

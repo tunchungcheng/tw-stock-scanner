@@ -42,7 +42,7 @@ python -m http.server 8000 --directory docs
 - `SETUP_MIN_SCORE`：蓄勢名單最低分數。
 - `NEUTRAL_SETUP_MIN_SCORE`：震盪行情最低分數。
 - `SETUP_LIMIT`：網頁顯示筆數。
-- `KD_RELATIVE_LOW_PERCENTILE`：全市場 KD 綜合值（(K + D) / 2）相對低檔百分位，預設最低 20%。網頁勾選「只看全市場 KD 最低 20%」會在原蓄勢名單中額外交集篩選，不改變原始掃描／排名／訊號追蹤。百分位以當日上市櫃有效 K、D 值股票計算，越低代表 KD 綜合值越低。
+- `KD_RELATIVE_LOW_PERCENTILE`：全市場 KD 綜合值（(K + D) / 2）相對低檔百分位，預設最低 20%。網頁勾選「顯示全市場 KD 最低 20%」會切換至獨立的全市場低檔清單，不套用蓄勢策略門檻、產業上限或原始排名；原蓄勢名單與訊號追蹤維持不變。百分位以當日上市櫃有效 K、D 值股票計算，越低代表 KD 綜合值越低。
 
 ## 資料與限制
 

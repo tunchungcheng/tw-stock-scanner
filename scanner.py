@@ -35,6 +35,7 @@ MIN_VOLUME_RATIO = 1.0
 MAX_MA20_DEVIATION_PCT = 9.0
 SOFT_MA20_DEVIATION_PCT = 6.0
 MAX_K_FOR_MOMENTUM = 80.0
+KD_RELATIVE_LOW_PERCENTILE = 20.0  # 全市場 KD 綜合值最低 20%
 SETUP_MIN_SCORE = 6
 NEUTRAL_SETUP_MIN_SCORE = 8
 SETUP_LIMIT = 20
@@ -618,6 +619,22 @@ def add_industry_context(latest: pd.DataFrame) -> pd.DataFrame:
     return latest
 
 
+def add_kd_relative_rank(latest: pd.DataFrame) -> pd.DataFrame:
+    """以全市場當日 (K + D) / 2 排名，標記 KD 綜合值最低的百分位。"""
+    result = latest.copy()
+    result["kd_composite"] = (result["K"] + result["D"]) / 2
+    valid = result["kd_composite"].notna() & np.isfinite(result["kd_composite"])
+    result["kd_relative_rank_pct"] = np.nan
+    if valid.any():
+        result.loc[valid, "kd_relative_rank_pct"] = (
+            result.loc[valid, "kd_composite"].rank(method="min", pct=True) * 100
+        )
+    result["kd_relative_low"] = result["kd_relative_rank_pct"].le(
+        KD_RELATIVE_LOW_PERCENTILE
+    )
+    return result
+
+
 def score_setup(latest: pd.DataFrame) -> pd.DataFrame:
     latest = latest.copy()
     latest["trend_turn"] = (latest["close"] > latest["MA5"]) & (latest["MA5"] > latest["MA20"])
@@ -756,6 +773,9 @@ def records_for_web(frame: pd.DataFrame, limit: int) -> list[dict[str, object]]:
                 "required_score": int(row.get("required_score", 0)),
                 "k": finite(row["K"], 1),
                 "d": finite(row["D"], 1),
+                "kd_composite": finite(row.get("kd_composite"), 1),
+                "kd_relative_rank_pct": finite(row.get("kd_relative_rank_pct"), 1),
+                "kd_relative_low": bool(row.get("kd_relative_low", False)),
                 "volume_ratio": finite(row["volume_ratio"]),
                 "volume_dry_ratio": finite(row["volume_dry_ratio"]),
                 "return_5d": finite(row["return_5d"]),
@@ -771,6 +791,41 @@ def records_for_web(frame: pd.DataFrame, limit: int) -> list[dict[str, object]]:
                 "reasons": reason_labels(row),
             }
         )
+    return records
+
+
+def kd_low_records(frame: pd.DataFrame) -> list[dict[str, object]]:
+    """Serialize the full-market lowest-KD subset without strategy scoring or industry caps."""
+    ranked = frame.loc[frame["kd_relative_low"].fillna(False)].sort_values(
+        ["kd_composite", "stock_id"], ascending=[True, True]
+    )
+    records: list[dict[str, object]] = []
+    for rank, (_, row) in enumerate(ranked.iterrows(), 1):
+        records.append({
+            "rank": rank,
+            "market": row["market"],
+            "stock_id": row["stock_id"],
+            "stock_name": row["stock_name"],
+            "industry": row.get("industry", "未分類"),
+            "close": finite(row.get("close")),
+            "pct_change": finite(row.get("pct_change")),
+            "k": finite(row.get("K"), 1),
+            "d": finite(row.get("D"), 1),
+            "kd_composite": finite(row.get("kd_composite"), 1),
+            "kd_relative_rank_pct": finite(row.get("kd_relative_rank_pct"), 1),
+            "kd_relative_low": True,
+            "volume_ratio": finite(row.get("volume_ratio")),
+            "return_5d": finite(row.get("return_5d")),
+            "return_20d": finite(row.get("return_20d")),
+            "relative_return_5d": finite(row.get("relative_return_5d")),
+            "distance_to_high20_pct": finite(row.get("distance_to_high20_pct")),
+            "ma20_deviation_pct": finite(row.get("ma20_deviation_pct")),
+            "revenue_month": row.get("revenue_month", ""),
+            "revenue_yoy": finite(row.get("revenue_yoy")),
+            "revenue_ytd_yoy": finite(row.get("revenue_ytd_yoy")),
+            "score": None,
+            "reasons": ["全市場 KD 綜合值最低 20%"],
+        })
     return records
 
 
@@ -939,6 +994,7 @@ def write_results(
             "market_contexts": context["market_contexts"],
         },
         "setup": records_for_web(setup, SETUP_LIMIT),
+        "kd_relative_low": kd_low_records(latest),
     }
     encoded = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
     (DATA_DIR / "latest.json").write_text(encoded, encoding="utf-8")
@@ -976,6 +1032,7 @@ def main() -> None:
     latest["industry_code"] = latest["industry_code"].fillna("")
     latest, context = add_market_context(latest, benchmark, latest_date)
     latest = add_industry_context(latest)
+    latest = add_kd_relative_rank(latest)
     setup = score_setup(latest)
     write_results(latest_date, setup, context, len(latest), errors)
     performance = track_archived_signals(prices)

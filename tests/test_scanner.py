@@ -183,3 +183,43 @@ def test_forward_signal_tracking(tmp_path, monkeypatch):
     assert signal["entry_price"] == 102
     assert signal["return_1d"] == 1.26
     assert (data_dir / "performance.json").exists()
+
+
+def test_kd_relative_rank_uses_whole_universe_and_lowest_percentile():
+    frame = pd.DataFrame({
+        "stock_id": [str(i) for i in range(1, 11)],
+        "K": [10, 20, 30, 40, 50, 60, 70, 80, 90, np.nan],
+        "D": [10, 20, 30, 40, 50, 60, 70, 80, 90, 20],
+    })
+    ranked = scanner.add_kd_relative_rank(frame)
+    assert np.isclose(ranked.loc[0, "kd_relative_rank_pct"], 100 / 9)
+    assert ranked.loc[8, "kd_relative_rank_pct"] == 90.0
+    assert bool(ranked.loc[0, "kd_relative_low"])
+    assert not bool(ranked.loc[1, "kd_relative_low"])
+    assert pd.isna(ranked.loc[9, "kd_relative_rank_pct"])
+    assert not bool(ranked.loc[9, "kd_relative_low"])
+
+
+def test_kd_relative_rank_does_not_mutate_input():
+    frame = pd.DataFrame({"K": [10.0, 90.0], "D": [15.0, 95.0]})
+    ranked = scanner.add_kd_relative_rank(frame)
+    assert "kd_relative_rank_pct" not in frame.columns
+    assert ranked["kd_relative_rank_pct"].tolist() == [50.0, 100.0]
+
+
+def test_kd_low_records_includes_all_low_ranked_stocks_without_industry_cap():
+    frame = pd.DataFrame({
+        "market": ["TWSE"] * 3,
+        "stock_id": ["1001", "1002", "1003"],
+        "stock_name": ["甲", "乙", "丙"],
+        "industry": ["半導體業"] * 3,
+        "K": [5.0, 10.0, 90.0],
+        "D": [5.0, 10.0, 90.0],
+        "kd_composite": [5.0, 10.0, 90.0],
+        "kd_relative_rank_pct": [10.0, 20.0, 100.0],
+        "kd_relative_low": [True, True, False],
+    })
+    records = scanner.kd_low_records(frame)
+    assert [row["stock_id"] for row in records] == ["1001", "1002"]
+    assert len(records) == 2
+    assert all(row["score"] is None for row in records)

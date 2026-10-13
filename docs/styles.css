@@ -210,3 +210,7 @@ footer { align-items: flex-start; padding: 15px 3px 0; color: var(--muted); font
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+.kd-low-control { display: inline-flex; align-items: center; gap: 7px; min-height: 42px; color: #c2cfdf; font-size: .8rem; white-space: nowrap; }
+.kd-low-control input { width: 16px; min-height: 16px; accent-color: var(--accent); }
+@media (max-width: 680px) { .kd-low-control { grid-column: 1 / -1; justify-content: flex-start; } }

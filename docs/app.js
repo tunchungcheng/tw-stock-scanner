@@ -117,8 +117,11 @@ function render() {
   const detail = els.empty.querySelector("span");
   if (title && detail) {
     if (allRows.length === 0) {
-      title.textContent = "目前沒有符合條件的股票";
-      detail.textContent = els.kdLowOnly?.checked ? "目前沒有可排名的有效 KD 資料。" : "嚴格條件下出現空名單是正常結果。";
+      const kdDataMissing = Boolean(els.kdLowOnly?.checked) && !Array.isArray(state.data.kd_relative_low);
+      title.textContent = kdDataMissing ? "KD 名單資料尚未更新" : "目前沒有符合條件的股票";
+      detail.textContent = kdDataMissing
+        ? "目前的 latest.json 尚未包含全市場 KD 名單。請在 GitHub Actions 重新執行每日掃描工作流程後重新整理頁面。"
+        : (els.kdLowOnly?.checked ? "目前沒有可排名的有效 KD 資料。" : "嚴格條件下出現空名單是正常結果。");
     } else {
       title.textContent = "找不到符合條件的股票";
       detail.textContent = "請調整搜尋關鍵字或產業篩選。";

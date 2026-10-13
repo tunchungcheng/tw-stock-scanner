@@ -183,3 +183,25 @@ def test_forward_signal_tracking(tmp_path, monkeypatch):
     assert signal["entry_price"] == 102
     assert signal["return_1d"] == 1.26
     assert (data_dir / "performance.json").exists()
+
+
+def test_kd_relative_rank_uses_whole_universe_and_lowest_percentile():
+    frame = pd.DataFrame({
+        "stock_id": [str(i) for i in range(1, 11)],
+        "K": [10, 20, 30, 40, 50, 60, 70, 80, 90, np.nan],
+        "D": [10, 20, 30, 40, 50, 60, 70, 80, 90, 20],
+    })
+    ranked = scanner.add_kd_relative_rank(frame)
+    assert ranked.loc[0, "kd_relative_rank_pct"] == 10.0
+    assert ranked.loc[8, "kd_relative_rank_pct"] == 90.0
+    assert bool(ranked.loc[0, "kd_relative_low"])
+    assert not bool(ranked.loc[1, "kd_relative_low"])
+    assert pd.isna(ranked.loc[9, "kd_relative_rank_pct"])
+    assert not bool(ranked.loc[9, "kd_relative_low"])
+
+
+def test_kd_relative_rank_does_not_mutate_input():
+    frame = pd.DataFrame({"K": [10.0, 90.0], "D": [15.0, 95.0]})
+    ranked = scanner.add_kd_relative_rank(frame)
+    assert "kd_relative_rank_pct" not in frame.columns
+    assert ranked["kd_relative_rank_pct"].tolist() == [50.0, 100.0]

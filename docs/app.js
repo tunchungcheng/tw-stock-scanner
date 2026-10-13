@@ -49,7 +49,7 @@ function updateSummary() {
 }
 
 function visibleRows() {
-  const rows = state.data.setup || [];
+  const rows = els.kdLowOnly?.checked ? (state.data.kd_relative_low || []) : (state.data.setup || []);
   const query = (els.search?.value || "").trim().toLocaleLowerCase("zh-TW");
   const industry = els.industry?.value || "";
   return rows.filter((row) => {
@@ -64,7 +64,8 @@ function visibleRows() {
 function updateFilterOptions() {
   if (!els.industry) return;
   const selected = els.industry.value;
-  const industries = [...new Set((state.data.setup || []).map((row) => row.industry || "未分類"))]
+  const sourceRows = els.kdLowOnly?.checked ? (state.data.kd_relative_low || []) : (state.data.setup || []);
+  const industries = [...new Set(sourceRows.map((row) => row.industry || "未分類"))]
     .sort((a, b) => a.localeCompare(b, "zh-TW"));
   els.industry.innerHTML = '<option value="">所有產業</option>';
   industries.forEach((industry) => {
@@ -89,7 +90,7 @@ function cell(label, value, className = "") {
 
 function render() {
   if (!els.body || !els.empty) return;
-  const allRows = state.data.setup || [];
+  const allRows = els.kdLowOnly?.checked ? (state.data.kd_relative_low || []) : (state.data.setup || []);
   const rows = visibleRows();
   updateResultCount(rows.length, allRows.length);
   els.body.innerHTML = rows.map((row) => `
@@ -98,7 +99,7 @@ function render() {
       ${cell("股票", `<a class="stock-link" href="${stockInfoUrl(row)}" target="_blank" rel="noopener noreferrer"><span class="stock"><strong>${escapeHtml(row.stock_id)} ${escapeHtml(row.stock_name)}</strong><span>查看股票資訊 ↗</span></span></a>`, "stock-cell")}
       ${cell("產業", escapeHtml(row.industry || "未分類"), "industry")}
       ${cell("月營收 YoY", `<span class="revenue"><strong>${signed(row.revenue_yoy)}</strong><span>${escapeHtml(row.revenue_month || "月份未提供")} · 累計 ${signed(row.revenue_ytd_yoy)}</span></span>`, tone(row.revenue_yoy))}
-      ${cell("分數", row.score, "score")}
+      ${cell("分數", row.score == null ? "—" : row.score, "score")}
       ${cell("收盤", number(row.close))}
       ${cell("當日", signed(row.pct_change), tone(row.pct_change))}
       ${cell("5 日", signed(row.return_5d), tone(row.return_5d))}
@@ -117,7 +118,7 @@ function render() {
   if (title && detail) {
     if (allRows.length === 0) {
       title.textContent = "目前沒有符合條件的股票";
-      detail.textContent = "嚴格條件下出現空名單是正常結果。";
+      detail.textContent = els.kdLowOnly?.checked ? "目前沒有可排名的有效 KD 資料。" : "嚴格條件下出現空名單是正常結果。";
     } else {
       title.textContent = "找不到符合條件的股票";
       detail.textContent = "請調整搜尋關鍵字或產業篩選。";
@@ -186,6 +187,7 @@ els.clearFilters?.addEventListener("click", () => {
   if (els.search) els.search.value = "";
   if (els.industry) els.industry.value = "";
   if (els.kdLowOnly) els.kdLowOnly.checked = false;
+  updateFilterOptions();
   render();
 });
 

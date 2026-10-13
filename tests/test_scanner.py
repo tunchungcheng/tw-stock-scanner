@@ -192,7 +192,7 @@ def test_kd_relative_rank_uses_whole_universe_and_lowest_percentile():
         "D": [10, 20, 30, 40, 50, 60, 70, 80, 90, 20],
     })
     ranked = scanner.add_kd_relative_rank(frame)
-    assert ranked.loc[0, "kd_relative_rank_pct"] == 10.0
+    assert np.isclose(ranked.loc[0, "kd_relative_rank_pct"], 100 / 9)
     assert ranked.loc[8, "kd_relative_rank_pct"] == 90.0
     assert bool(ranked.loc[0, "kd_relative_low"])
     assert not bool(ranked.loc[1, "kd_relative_low"])

@@ -9,6 +9,7 @@ const els = {
   search: document.querySelector("#stock-search"),
   industry: document.querySelector("#industry-filter"),
   clearFilters: document.querySelector("#clear-filters"),
+  kdLowOnly: document.querySelector("#kd-low-only"),
   resultCount: document.querySelector("#result-count"),
 };
 
@@ -55,7 +56,8 @@ function visibleRows() {
     const matchesQuery = !query || [row.stock_id, row.stock_name, row.industry]
       .some((value) => String(value ?? "").toLocaleLowerCase("zh-TW").includes(query));
     const matchesIndustry = !industry || String(row.industry || "未分類") === industry;
-    return matchesQuery && matchesIndustry;
+    const matchesKdLow = !els.kdLowOnly?.checked || row.kd_relative_low === true;
+    return matchesQuery && matchesIndustry && matchesKdLow;
   });
 }
 
@@ -103,6 +105,7 @@ function render() {
       ${cell("20 日", signed(row.return_20d), tone(row.return_20d))}
       ${cell("量比", `${number(row.volume_ratio)}×`)}
       ${cell("K / D", `${number(row.k, 1)} / ${number(row.d, 1)}`)}
+      ${cell("全市場 KD 百分位", row.kd_relative_rank_pct == null ? "—" : `${number(row.kd_relative_rank_pct, 1)}%`, row.kd_relative_low ? "positive" : "")}
       ${cell("MA20 乖離", signed(row.ma20_deviation_pct), Number(row.ma20_deviation_pct) > 6 ? "warning" : "")}
       ${cell("距高點", signed(row.distance_to_high20_pct))}
       ${cell("入選原因", (row.reasons || []).map((reason) => `<span class="tag">${escapeHtml(reason)}</span>`).join(""))}
@@ -178,9 +181,11 @@ els.dateSelect?.addEventListener("change", (event) => {
 
 els.search?.addEventListener("input", render);
 els.industry?.addEventListener("change", render);
+els.kdLowOnly?.addEventListener("change", render);
 els.clearFilters?.addEventListener("click", () => {
   if (els.search) els.search.value = "";
   if (els.industry) els.industry.value = "";
+  if (els.kdLowOnly) els.kdLowOnly.checked = false;
   render();
 });
 

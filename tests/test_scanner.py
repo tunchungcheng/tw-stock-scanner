@@ -205,3 +205,21 @@ def test_kd_relative_rank_does_not_mutate_input():
     ranked = scanner.add_kd_relative_rank(frame)
     assert "kd_relative_rank_pct" not in frame.columns
     assert ranked["kd_relative_rank_pct"].tolist() == [50.0, 100.0]
+
+
+def test_kd_low_records_includes_all_low_ranked_stocks_without_industry_cap():
+    frame = pd.DataFrame({
+        "market": ["TWSE"] * 3,
+        "stock_id": ["1001", "1002", "1003"],
+        "stock_name": ["甲", "乙", "丙"],
+        "industry": ["半導體業"] * 3,
+        "K": [5.0, 10.0, 90.0],
+        "D": [5.0, 10.0, 90.0],
+        "kd_composite": [5.0, 10.0, 90.0],
+        "kd_relative_rank_pct": [10.0, 20.0, 100.0],
+        "kd_relative_low": [True, True, False],
+    })
+    records = scanner.kd_low_records(frame)
+    assert [row["stock_id"] for row in records] == ["1001", "1002"]
+    assert len(records) == 2
+    assert all(row["score"] is None for row in records)

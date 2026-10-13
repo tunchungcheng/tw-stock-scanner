@@ -794,6 +794,41 @@ def records_for_web(frame: pd.DataFrame, limit: int) -> list[dict[str, object]]:
     return records
 
 
+def kd_low_records(frame: pd.DataFrame) -> list[dict[str, object]]:
+    """Serialize the full-market lowest-KD subset without strategy scoring or industry caps."""
+    ranked = frame.loc[frame["kd_relative_low"].fillna(False)].sort_values(
+        ["kd_composite", "stock_id"], ascending=[True, True]
+    )
+    records: list[dict[str, object]] = []
+    for rank, (_, row) in enumerate(ranked.iterrows(), 1):
+        records.append({
+            "rank": rank,
+            "market": row["market"],
+            "stock_id": row["stock_id"],
+            "stock_name": row["stock_name"],
+            "industry": row.get("industry", "未分類"),
+            "close": finite(row.get("close")),
+            "pct_change": finite(row.get("pct_change")),
+            "k": finite(row.get("K"), 1),
+            "d": finite(row.get("D"), 1),
+            "kd_composite": finite(row.get("kd_composite"), 1),
+            "kd_relative_rank_pct": finite(row.get("kd_relative_rank_pct"), 1),
+            "kd_relative_low": True,
+            "volume_ratio": finite(row.get("volume_ratio")),
+            "return_5d": finite(row.get("return_5d")),
+            "return_20d": finite(row.get("return_20d")),
+            "relative_return_5d": finite(row.get("relative_return_5d")),
+            "distance_to_high20_pct": finite(row.get("distance_to_high20_pct")),
+            "ma20_deviation_pct": finite(row.get("ma20_deviation_pct")),
+            "revenue_month": row.get("revenue_month", ""),
+            "revenue_yoy": finite(row.get("revenue_yoy")),
+            "revenue_ytd_yoy": finite(row.get("revenue_ytd_yoy")),
+            "score": None,
+            "reasons": ["全市場 KD 綜合值最低 20%"],
+        })
+    return records
+
+
 def track_archived_signals(prices: pd.DataFrame) -> dict[str, object]:
     """以可實際執行的進場／停損規則追蹤已發布訊號，避免回測使用錯誤的日期。"""
     tracked: list[dict[str, object]] = []
@@ -959,6 +994,7 @@ def write_results(
             "market_contexts": context["market_contexts"],
         },
         "setup": records_for_web(setup, SETUP_LIMIT),
+        "kd_relative_low": kd_low_records(latest),
     }
     encoded = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
     (DATA_DIR / "latest.json").write_text(encoded, encoding="utf-8")
